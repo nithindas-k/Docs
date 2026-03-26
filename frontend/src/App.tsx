@@ -5,6 +5,7 @@ import { Layout } from './components/Layout';
 import { Home } from './pages/Home';
 import { Login } from './pages/Login';
 import { CategoryDetail } from './pages/CategoryDetail';
+import { FileUploadPage } from './pages/FileUploadPage';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
             <Route path="/category/:id" element={<CategoryDetail />} />
+            <Route path="/upload" element={<FileUploadPage />} />
           </Route>
         </Routes>
       </BrowserRouter>
