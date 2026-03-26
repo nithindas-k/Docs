@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { Plus, Trash2, Upload, X } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
+import { FileUploadCard, UploadedFile } from './ui/file-upload-card';
 
 interface Field {
   key: string;
@@ -30,36 +31,49 @@ export function EditItemForm({
   const [fields, setFields] = useState<Field[]>(
     itemFields.length > 0 ? itemFields : [{ key: '', value: '', isEncrypted: false }]
   );
-  const [photoPreview, setPhotoPreview] = useState<string | null>(itemPhotoUrl || null);
-  const [photoFile, setPhotoFile] = useState<File | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>(
+    itemPhotoUrl
+      ? [
+          {
+            id: `existing-${Date.now()}`,
+            file: new File([], 'existing-image', { type: 'image/*' }),
+            progress: 100,
+            status: 'completed',
+          },
+        ]
+      : []
+  );
 
   useEffect(() => {
     setTitle(itemTitle);
     setFields(itemFields.length > 0 ? itemFields : [{ key: '', value: '', isEncrypted: false }]);
-    setPhotoPreview(itemPhotoUrl || null);
+    if (itemPhotoUrl) {
+      setUploadedFiles([
+        {
+          id: `existing-${Date.now()}`,
+          file: new File([], 'existing-image', { type: 'image/*' }),
+          progress: 100,
+          status: 'completed',
+        },
+      ]);
+    } else {
+      setUploadedFiles([]);
+    }
   }, [itemTitle, itemFields, itemPhotoUrl]);
 
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && file.type.startsWith('image/')) {
-      setPhotoFile(file);
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setPhotoPreview(event.target?.result as string);
-      };
-      reader.readAsDataURL(file);
-    } else if (file) {
-      alert('Please select an image file');
-    }
+  const handleFilesChange = (files: File[]) => {
+    const normalized = files.map((file) => ({
+      id: `${file.name}-${Date.now()}`,
+      file,
+      progress: 0,
+      status: 'uploading' as const,
+    }));
+    setUploadedFiles(normalized);
   };
 
-  const handleRemovePhoto = () => {
-    setPhotoFile(null);
-    setPhotoPreview(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
+  const handleFileRemove = (id: string) => {
+    setUploadedFiles((prev) => prev.filter((file) => file.id !== id));
   };
 
   const handleAddField = () => {
@@ -78,14 +92,13 @@ export function EditItemForm({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!title.trim()) {
       alert('Title is required');
       return;
     }
 
-    // Validate fields: all filled fields must have both key and value
-    const validFields = fields.filter(f => f.key.trim() || f.value.trim());
+    const validFields = fields.filter((f) => f.key.trim() || f.value.trim());
     for (const field of validFields) {
       if (!field.key.trim() || !field.value.trim()) {
         alert('All fields must have both key and value');
@@ -96,53 +109,18 @@ export function EditItemForm({
     onSubmit({
       title: title.trim(),
       fields: validFields,
-      photoFile: photoFile || undefined,
+      photoFile: uploadedFiles[0]?.file,
     });
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Photo Upload */}
-      <div className="space-y-2">
-        <label className="text-sm font-medium text-foreground">Photo (Optional)</label>
-        {photoPreview ? (
-          <div className="relative w-full">
-            <img
-              src={photoPreview}
-              alt="Preview"
-              className="w-full h-40 object-cover rounded-lg border border-border"
-            />
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={handleRemovePhoto}
-              className="absolute top-2 right-2 bg-background/80 hover:bg-background text-destructive"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-        ) : (
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="relative w-full flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-border bg-accent/5 p-6 hover:bg-accent/10 transition-colors cursor-pointer"
-          >
-            <Upload className="h-8 w-8 text-muted-foreground mb-2" />
-            <span className="text-sm font-medium text-muted-foreground">Click to upload photo</span>
-            <span className="text-xs text-muted-foreground mt-1">PNG, JPG, GIF up to 5MB</span>
-          </button>
-        )}
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          onChange={handlePhotoChange}
-          className="hidden"
-        />
-      </div>
+      <FileUploadCard
+        files={uploadedFiles}
+        onFilesChange={handleFilesChange}
+        onFileRemove={handleFileRemove}
+      />
 
-      {/* Title Input */}
       <div className="space-y-2">
         <label className="text-sm font-medium text-foreground">Item Title</label>
         <Input
@@ -154,7 +132,6 @@ export function EditItemForm({
         />
       </div>
 
-      {/* Dynamic Fields Section */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <label className="text-sm font-medium text-foreground">Details</label>
@@ -212,24 +189,14 @@ export function EditItemForm({
           ))}
         </div>
 
-        <Button
-          type="button"
-          variant="outline"
-          className="w-full gap-2 border-dashed"
-          onClick={handleAddField}
-        >
+        <Button type="button" variant="outline" className="w-full gap-2 border-dashed" onClick={handleAddField}>
           <Plus className="h-4 w-4" />
           Add Field
         </Button>
       </div>
 
-      {/* Submit Buttons */}
       <div className="flex gap-2">
-        <Button
-          type="submit"
-          disabled={isLoading}
-          className="flex-1"
-        >
+        <Button type="submit" disabled={isLoading} className="flex-1">
           {isLoading ? 'Saving...' : 'Save Changes'}
         </Button>
       </div>
