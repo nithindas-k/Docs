@@ -38,11 +38,35 @@ class ApiService {
     return response.json();
   }
 
+  async postFormData<T>(path: string, formData: FormData): Promise<T> {
+    const response = await fetch(`${API_URL}${path}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': this.getToken() ? `Bearer ${this.getToken()}` : '',
+      },
+      body: formData,
+    });
+    if (!response.ok) throw new ApiError('API Error', response.status);
+    return response.json();
+  }
+
   async put<T>(path: string, body: any): Promise<T> {
     const response = await fetch(`${API_URL}${path}`, {
       method: 'PUT',
       headers: this.getHeaders(),
       body: JSON.stringify(body),
+    });
+    if (!response.ok) throw new ApiError('API Error', response.status);
+    return response.json();
+  }
+
+  async putFormData<T>(path: string, formData: FormData): Promise<T> {
+    const response = await fetch(`${API_URL}${path}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': this.getToken() ? `Bearer ${this.getToken()}` : '',
+      },
+      body: formData,
     });
     if (!response.ok) throw new ApiError('API Error', response.status);
     return response.json();

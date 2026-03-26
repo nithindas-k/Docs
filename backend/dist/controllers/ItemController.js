@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const ItemService_1 = __importDefault(require("../services/ItemService"));
 const constants_1 = require("../constants");
+const cloudinary_1 = require("../utils/cloudinary");
 class ItemController {
     async getItemsByCategory(req, res) {
         try {
@@ -19,10 +20,24 @@ class ItemController {
     async createItem(req, res) {
         try {
             const { category, title, fields } = req.body;
+            const file = req.file;
             if (!category || !title) {
                 return res.status(constants_1.STATUS_CODES.BAD_REQUEST).json({ message: 'Category and title are required' });
             }
-            const item = await ItemService_1.default.createItem(req.user.userId, category, { title, fields });
+            let photoUrl;
+            if (file) {
+                try {
+                    photoUrl = await (0, cloudinary_1.uploadToCloudinary)(file.buffer, file.originalname);
+                }
+                catch (uploadError) {
+                    return res.status(constants_1.STATUS_CODES.BAD_REQUEST).json({ message: 'Photo upload failed' });
+                }
+            }
+            const item = await ItemService_1.default.createItem(req.user.userId, category, {
+                title,
+                fields: fields ? JSON.parse(fields) : undefined,
+                photoUrl,
+            });
             res.status(constants_1.STATUS_CODES.CREATED).json({
                 message: constants_1.MESSAGES.CREATED,
                 data: item,
@@ -36,10 +51,24 @@ class ItemController {
         try {
             const { id } = req.params;
             const { title, fields } = req.body;
+            const file = req.file;
             if (!title) {
                 return res.status(constants_1.STATUS_CODES.BAD_REQUEST).json({ message: 'Title is required' });
             }
-            const item = await ItemService_1.default.updateItem(req.user.userId, id, { title, fields });
+            let photoUrl;
+            if (file) {
+                try {
+                    photoUrl = await (0, cloudinary_1.uploadToCloudinary)(file.buffer, file.originalname);
+                }
+                catch (uploadError) {
+                    return res.status(constants_1.STATUS_CODES.BAD_REQUEST).json({ message: 'Photo upload failed' });
+                }
+            }
+            const item = await ItemService_1.default.updateItem(req.user.userId, id, {
+                title,
+                fields: fields ? JSON.parse(fields) : undefined,
+                photoUrl: photoUrl || undefined,
+            });
             if (!item) {
                 return res.status(constants_1.STATUS_CODES.NOT_FOUND).json({ message: constants_1.MESSAGES.NOT_FOUND });
             }

@@ -59,7 +59,10 @@ class ItemService {
     });
 
     item.title = data.title;
-    item.photoUrl = data.photoUrl;
+    // Only update photoUrl if a new one is provided
+    if (data.photoUrl !== undefined) {
+      item.photoUrl = data.photoUrl;
+    }
     item.fields = fieldsToSave || [];
     await item.save();
 

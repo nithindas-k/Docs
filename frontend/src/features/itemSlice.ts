@@ -8,6 +8,7 @@ export interface Item {
   _id: string;
   name: string;
   category: string;
+  photoUrl?: string;
   fields: Array<{ key: string; value: string; isEncrypted?: boolean }>;
   lastAccessed: string;
 }

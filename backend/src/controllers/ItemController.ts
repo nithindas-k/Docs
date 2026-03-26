@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import ItemService from '../services/ItemService';
 import { STATUS_CODES, MESSAGES } from '../constants';
+import { uploadToCloudinary } from '../utils/cloudinary';
 
 class ItemController {
   async getItemsByCategory(req: Request, res: Response) {
@@ -16,10 +17,26 @@ class ItemController {
   async createItem(req: Request, res: Response) {
     try {
       const { category, title, fields } = req.body;
+      const file = (req as any).file;
+
       if (!category || !title) {
         return res.status(STATUS_CODES.BAD_REQUEST).json({ message: 'Category and title are required' });
       }
-      const item = await ItemService.createItem(req.user!.userId, category, { title, fields });
+
+      let photoUrl: string | undefined;
+      if (file) {
+        try {
+          photoUrl = await uploadToCloudinary(file.buffer, file.originalname);
+        } catch (uploadError) {
+          return res.status(STATUS_CODES.BAD_REQUEST).json({ message: 'Photo upload failed' });
+        }
+      }
+
+      const item = await ItemService.createItem(req.user!.userId, category, { 
+        title, 
+        fields: fields ? JSON.parse(fields) : undefined,
+        photoUrl,
+      });
       res.status(STATUS_CODES.CREATED).json({
         message: MESSAGES.CREATED,
         data: item,
@@ -33,10 +50,26 @@ class ItemController {
     try {
       const { id } = req.params;
       const { title, fields } = req.body;
+      const file = (req as any).file;
+
       if (!title) {
         return res.status(STATUS_CODES.BAD_REQUEST).json({ message: 'Title is required' });
       }
-      const item = await ItemService.updateItem(req.user!.userId, id, { title, fields });
+
+      let photoUrl: string | undefined;
+      if (file) {
+        try {
+          photoUrl = await uploadToCloudinary(file.buffer, file.originalname);
+        } catch (uploadError) {
+          return res.status(STATUS_CODES.BAD_REQUEST).json({ message: 'Photo upload failed' });
+        }
+      }
+
+      const item = await ItemService.updateItem(req.user!.userId, id, { 
+        title, 
+        fields: fields ? JSON.parse(fields) : undefined,
+        photoUrl: photoUrl || undefined,
+      });
       if (!item) {
         return res.status(STATUS_CODES.NOT_FOUND).json({ message: MESSAGES.NOT_FOUND });
       }

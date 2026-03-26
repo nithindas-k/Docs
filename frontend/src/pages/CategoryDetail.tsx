@@ -48,16 +48,20 @@ export function CategoryDetail() {
     }));
   };
 
-  const handleAddItem = async (data: { title: string; fields: Array<{ key: string; value: string; isEncrypted: boolean }> }) => {
+  const handleAddItem = async (data: { title: string; fields: Array<{ key: string; value: string; isEncrypted: boolean }>; photoFile?: File }) => {
     if (!id) return;
 
     setIsSubmitting(true);
     try {
-      await api.post(API_ROUTES.ITEM.BASE, {
-        category: id,
-        title: data.title,
-        fields: data.fields,
-      });
+      const formData = new FormData();
+      formData.append('category', id);
+      formData.append('title', data.title);
+      formData.append('fields', JSON.stringify(data.fields));
+      if (data.photoFile) {
+        formData.append('photo', data.photoFile);
+      }
+
+      await api.postFormData(API_ROUTES.ITEM.BASE, formData);
 
       // Refresh items list
       dispatch(fetchItemsByCategory(id));
@@ -70,15 +74,19 @@ export function CategoryDetail() {
     }
   };
 
-  const handleUpdateItem = async (data: { title: string; fields: Array<{ key: string; value: string; isEncrypted: boolean }> }) => {
+  const handleUpdateItem = async (data: { title: string; fields: Array<{ key: string; value: string; isEncrypted: boolean }>; photoFile?: File }) => {
     if (!editingItem) return;
 
     setIsSubmitting(true);
     try {
-      await api.put(`${API_ROUTES.ITEM.BASE}/${editingItem._id}`, {
-        title: data.title,
-        fields: data.fields,
-      });
+      const formData = new FormData();
+      formData.append('title', data.title);
+      formData.append('fields', JSON.stringify(data.fields));
+      if (data.photoFile) {
+        formData.append('photo', data.photoFile);
+      }
+
+      await api.putFormData(`${API_ROUTES.ITEM.BASE}/${editingItem._id}`, formData);
 
       // Refresh items list
       if (id) {
@@ -204,6 +212,7 @@ export function CategoryDetail() {
                           value: f.value,
                           isEncrypted: f.isEncrypted ?? false,
                         }))}
+                        itemPhotoUrl={editingItem.photoUrl}
                         onSubmit={handleUpdateItem}
                         isLoading={isSubmitting}
                       />
@@ -227,6 +236,18 @@ export function CategoryDetail() {
                 <CardDescription>Added on {new Date(item.createdAt).toLocaleDateString()}</CardDescription>
               </CardHeader>
               <CardContent className="pt-6 space-y-4">
+                {item.photoUrl && (
+                  <div className="rounded-lg overflow-hidden bg-accent/20">
+                    <img 
+                      src={item.photoUrl} 
+                      alt={item.title}
+                      className="w-full h-48 object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none';
+                      }}
+                    />
+                  </div>
+                )}
                 {item.fields.map((field: any) => (
                   <div key={field.key} className="space-y-1">
                     <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{field.key}</label>

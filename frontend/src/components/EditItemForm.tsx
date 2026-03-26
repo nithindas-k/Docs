@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, Upload, X } from 'lucide-react';
 
 interface Field {
   key: string;
@@ -13,7 +13,8 @@ interface EditItemFormProps {
   categoryName: string;
   itemTitle: string;
   itemFields: Field[];
-  onSubmit: (data: { title: string; fields: Field[] }) => void;
+  itemPhotoUrl?: string;
+  onSubmit: (data: { title: string; fields: Field[]; photoFile?: File }) => void;
   isLoading?: boolean;
 }
 
@@ -21,6 +22,7 @@ export function EditItemForm({
   categoryName,
   itemTitle,
   itemFields,
+  itemPhotoUrl,
   onSubmit,
   isLoading,
 }: EditItemFormProps) {
@@ -28,11 +30,37 @@ export function EditItemForm({
   const [fields, setFields] = useState<Field[]>(
     itemFields.length > 0 ? itemFields : [{ key: '', value: '', isEncrypted: false }]
   );
+  const [photoPreview, setPhotoPreview] = useState<string | null>(itemPhotoUrl || null);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setTitle(itemTitle);
     setFields(itemFields.length > 0 ? itemFields : [{ key: '', value: '', isEncrypted: false }]);
-  }, [itemTitle, itemFields]);
+    setPhotoPreview(itemPhotoUrl || null);
+  }, [itemTitle, itemFields, itemPhotoUrl]);
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      setPhotoFile(file);
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setPhotoPreview(event.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    } else if (file) {
+      alert('Please select an image file');
+    }
+  };
+
+  const handleRemovePhoto = () => {
+    setPhotoFile(null);
+    setPhotoPreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
 
   const handleAddField = () => {
     setFields([...fields, { key: '', value: '', isEncrypted: false }]);
@@ -68,11 +96,52 @@ export function EditItemForm({
     onSubmit({
       title: title.trim(),
       fields: validFields,
+      photoFile: photoFile || undefined,
     });
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Photo Upload */}
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-foreground">Photo (Optional)</label>
+        {photoPreview ? (
+          <div className="relative w-full">
+            <img
+              src={photoPreview}
+              alt="Preview"
+              className="w-full h-40 object-cover rounded-lg border border-border"
+            />
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={handleRemovePhoto}
+              className="absolute top-2 right-2 bg-background/80 hover:bg-background text-destructive"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="relative w-full flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-border bg-accent/5 p-6 hover:bg-accent/10 transition-colors cursor-pointer"
+          >
+            <Upload className="h-8 w-8 text-muted-foreground mb-2" />
+            <span className="text-sm font-medium text-muted-foreground">Click to upload photo</span>
+            <span className="text-xs text-muted-foreground mt-1">PNG, JPG, GIF up to 5MB</span>
+          </button>
+        )}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handlePhotoChange}
+          className="hidden"
+        />
+      </div>
+
       {/* Title Input */}
       <div className="space-y-2">
         <label className="text-sm font-medium text-foreground">Item Title</label>
