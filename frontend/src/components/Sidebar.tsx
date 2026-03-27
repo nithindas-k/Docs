@@ -49,6 +49,7 @@ export function Sidebar({ categories, isOpen, setIsOpen }: SidebarProps) {
           <nav className="flex flex-col gap-1">
             <NavLink
               to="/"
+              onClick={() => setIsOpen(false)}
               className={({ isActive }) =>
                 cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground",
@@ -61,6 +62,7 @@ export function Sidebar({ categories, isOpen, setIsOpen }: SidebarProps) {
             </NavLink>
             <NavLink
               to="/persons"
+              onClick={() => setIsOpen(false)}
               className={({ isActive }) =>
                 cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground",
@@ -79,6 +81,7 @@ export function Sidebar({ categories, isOpen, setIsOpen }: SidebarProps) {
               <NavLink
                 key={cat._id}
                 to={`/category/${cat._id}`}
+                onClick={() => setIsOpen(false)}
                 className={({ isActive }) =>
                   cn(
                     "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground",
@@ -91,7 +94,12 @@ export function Sidebar({ categories, isOpen, setIsOpen }: SidebarProps) {
               </NavLink>
             ))}
 
-            <Button variant="ghost" className="mt-2 w-full justify-start gap-3 border border-dashed border-border" size="sm">
+            <Button 
+              variant="ghost" 
+              className="mt-2 w-full justify-start gap-3 border border-dashed border-border" 
+              size="sm"
+              onClick={() => setIsOpen(false)}
+            >
               <Plus className="w-4 h-4" />
               Add Category
             </Button>
