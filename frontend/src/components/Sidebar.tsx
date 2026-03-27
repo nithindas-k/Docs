@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { CreditCard, Car, FileText, Landmark, GraduationCap, UserCheck, Book, Plus, LayoutDashboard } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { Button } from './ui/button';
+import { Theme } from './ui/theme';
 
 const STYLED_ICONS: Record<string, ReactNode> = {
   'credit-card': <CreditCard className="w-5 h-5" />,
@@ -83,6 +84,11 @@ export function Sidebar({ categories, isOpen, setIsOpen }: SidebarProps) {
               Add Category
             </Button>
           </nav>
+        </div>
+
+        <div className="mt-auto p-4 border-t lg:hidden">
+          <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-2 mb-3">Theme</div>
+          <Theme variant="tabs" size="sm" className="w-full" />
         </div>
       </aside>
     </>
