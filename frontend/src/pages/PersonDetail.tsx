@@ -38,7 +38,6 @@ export function PersonDetail() {
     }
   }, [id, dispatch]);
 
-  // Group documents by categories that actually contain items
   const groupedCategories = categories.filter(cat => 
     personItems.some(item => item.category === cat._id)
   );
@@ -206,7 +205,6 @@ export function PersonDetail() {
 
           <div className="w-full">
             {activeCategoryId ? (
-                /* Sub-View: Items within a specific Category */
                 <ResourceCardsGrid items={activeCategoryItems.filter(i => i.title.toLowerCase().includes(searchQuery.toLowerCase())).map(item => ({
                   icon: <ShieldCheck className="w-5 h-5 text-muted-foreground" />,
                   iconSrc: item.photoUrl,
@@ -219,7 +217,6 @@ export function PersonDetail() {
                   href: `/item/${item._id}`,
                 }))} />
             ) : (
-                /* Main-View: List of categories with items */
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                   {groupedCategories.length > 0 ? (
                       groupedCategories.map((cat) => (

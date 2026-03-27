@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "../features/hooks";
 import { addPerson, updatePerson, deletePerson, Person } from "../features/personSlice";
 import { ProfileSelector } from "../components/ui/profile-selector";
+import AnimatedShaderBackground from "../components/ui/animated-shader-background";
 
 export function Persons() {
   const dispatch = useAppDispatch();
@@ -57,21 +58,22 @@ export function Persons() {
   }));
 
   return (
-    <div className="flex flex-col gap-6 w-full py-4">
+    <div className="flex flex-col gap-6 w-full py-4 relative z-10">
+      <AnimatedShaderBackground />
       {/* Header - Minimal and centered above profiles */}
       <div className="flex flex-col items-center mb-0 transition-all duration-700 animate-in fade-in slide-in-from-top-4">
-          <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-6 shadow-sm border-2 border-primary/5">
-            <Users className="h-7 w-7" />
-          </div>
-          <p className="text-muted-foreground font-bold tracking-[0.2em] text-[10px] uppercase opacity-60">
-            Secure Member Gate
-          </p>
+        <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-6 shadow-sm border-2 border-primary/5">
+          <Users className="h-7 w-7" />
+        </div>
+        <p className="text-muted-foreground font-bold tracking-[0.2em] text-[10px] uppercase opacity-60">
+          Secure Member Gate
+        </p>
       </div>
-      
+
       {loading ? (
         <div className="flex-1 flex flex-col items-center justify-center p-12 gap-4">
-             <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary/30 border-t-2 border-t-primary" />
-             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest animate-pulse">Establishing Trust...</p>
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary/30 border-t-2 border-t-primary" />
+          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest animate-pulse">Establishing Trust...</p>
         </div>
       ) : persons.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center p-12 text-center animate-in fade-in zoom-in duration-700">
@@ -88,7 +90,7 @@ export function Persons() {
           </Button>
         </div>
       ) : (
-        <ProfileSelector 
+        <ProfileSelector
           title="Choose a person"
           profiles={profiles}
           onProfileSelect={(id) => navigate(`/persons/${id}`)}
@@ -120,9 +122,9 @@ export function Persons() {
       <Dialog open={!!editingPerson} onOpenChange={(open) => !open && setEditingPerson(null)}>
         <DialogContent className="p-0 bg-transparent border-none shadow-none w-[92vw] sm:max-w-lg items-center flex justify-center focus:outline-none focus-visible:outline-none">
           <div className="w-full">
-             <DialogHeader className="sr-only">
-                <DialogTitle>Edit Family Profile</DialogTitle>
-              </DialogHeader>
+            <DialogHeader className="sr-only">
+              <DialogTitle>Edit Family Profile</DialogTitle>
+            </DialogHeader>
             {editingPerson && (
               <PersonFormCard
                 initialData={{ name: editingPerson.name, imageUrl: editingPerson.imageUrl }}
