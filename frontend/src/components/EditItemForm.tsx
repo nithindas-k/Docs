@@ -1,8 +1,10 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Plus, Trash2 } from 'lucide-react';
 import { FileUploadCard, UploadedFile } from './ui/file-upload-card';
+import { ImageCropper } from './ui/image-cropper';
+import { Dialog, DialogContent, DialogTitle, DialogHeader } from './ui/dialog';
 
 interface Field {
   key: string;
@@ -45,6 +47,8 @@ export function EditItemForm({
       : []
   );
 
+  const [imageToCrop, setImageToCrop] = useState<{ file: File; src: string } | null>(null);
+
   useEffect(() => {
     setTitle(itemTitle);
     setFields(itemFields.length > 0 ? itemFields : [{ key: '', value: '', isEncrypted: false }]);
@@ -63,13 +67,48 @@ export function EditItemForm({
   }, [itemTitle, itemFields, itemPhotoUrl]);
 
   const handleFilesChange = (files: File[]) => {
-    const normalized = files.map((file) => ({
-      id: `${file.name}-${Date.now()}`,
-      file,
-      progress: 0,
-      status: 'uploading' as const,
-    }));
-    setUploadedFiles(normalized);
+    const file = files[0];
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImageToCrop({ file, src: reader.result as string });
+      };
+      reader.readAsDataURL(file);
+    } else if (file) {
+      const normalized = [{
+        id: `${file.name}-${Date.now()}`,
+        file,
+        progress: 100,
+        status: 'completed' as const,
+      }];
+      setUploadedFiles(normalized);
+    }
+  };
+
+  const handleCropDone = async (croppedImageUrl: string) => {
+    if (!imageToCrop) return;
+
+    try {
+      const response = await fetch(croppedImageUrl);
+      const blob = await response.blob();
+      const croppedFile = new File([blob], imageToCrop.file.name, { type: 'image/png' });
+
+      const normalized = {
+        id: `${croppedFile.name}-${Date.now()}`,
+        file: croppedFile,
+        progress: 100,
+        status: 'completed' as const,
+      };
+
+      setUploadedFiles([normalized]);
+      setImageToCrop(null);
+    } catch (e) {
+      console.error('Cropping failed:', e);
+    }
+  };
+
+  const handleCropCancel = () => {
+    setImageToCrop(null);
   };
 
   const handleFileRemove = (id: string) => {
@@ -115,6 +154,21 @@ export function EditItemForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      <Dialog open={!!imageToCrop} onOpenChange={(open) => !open && setImageToCrop(null)}>
+        <DialogContent className="max-w-lg border bg-background p-6 rounded-2xl shadow-xl overflow-hidden">
+          <DialogHeader className="sr-only">
+            <DialogTitle>Crop Image</DialogTitle>
+          </DialogHeader>
+          {imageToCrop && (
+            <ImageCropper 
+              imageSrc={imageToCrop.src} 
+              onCropComplete={handleCropDone} 
+              onCancel={handleCropCancel} 
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
       <FileUploadCard
         files={uploadedFiles}
         onFilesChange={handleFilesChange}
