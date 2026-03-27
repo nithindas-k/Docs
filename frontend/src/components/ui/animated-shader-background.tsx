@@ -111,12 +111,22 @@ const AnimatedShaderBackground = () => {
     const mesh = new THREE.Mesh(geometry, material);
     scene.add(mesh);
 
-    let frameId: number;
+    let frameId: number | null = null;
     const animate = () => {
+      const isMobile = window.innerWidth < 768;
+      
+      // If mobile, we stop the animation loop to make it static
+      if (isMobile) {
+        renderer.render(scene, camera);
+        return; 
+      }
+
       material.uniforms.iTime.value += 0.01;
       renderer.render(scene, camera);
       frameId = requestAnimationFrame(animate);
     };
+    
+    // Initial render and start animation if not mobile
     animate();
 
     const handleResize = () => {
@@ -124,11 +134,14 @@ const AnimatedShaderBackground = () => {
       const height = window.innerHeight;
       renderer.setSize(width, height);
       material.uniforms.iResolution.value.set(width, height);
+      
+      // Force a re-render on resize (especially useful for the static mobile view)
+      renderer.render(scene, camera);
     };
     window.addEventListener('resize', handleResize);
 
     return () => {
-      cancelAnimationFrame(frameId);
+      if (frameId) cancelAnimationFrame(frameId);
       window.removeEventListener('resize', handleResize);
       container.removeChild(renderer.domElement);
       geometry.dispose();
@@ -138,8 +151,14 @@ const AnimatedShaderBackground = () => {
   }, []);
 
   useEffect(() => {
-    if (materialRef.current) {
+    if (materialRef.current && containerRef.current) {
       materialRef.current.uniforms.uTheme.value = theme === 'dark' ? 0.0 : 1.0;
+      
+      // Re-render if it's static (mobile)
+      if (window.innerWidth < 768) {
+        // We need access to renderer here or just trigger a dummy resize event
+        window.dispatchEvent(new Event('resize'));
+      }
     }
   }, [theme]);
 

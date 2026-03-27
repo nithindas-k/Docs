@@ -8,9 +8,11 @@ import { fetchPersons } from '../features/personSlice';
 import { logout, fetchProfile } from '../features/authSlice';
 import Lenis from 'lenis';
 import { Toaster } from 'sonner';
+import { LogoutConfirmDialog } from './LogoutConfirmDialog';
 
 export function Layout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
   const scrollRef = useRef<HTMLElement>(null);
   const dispatch = useAppDispatch();
   const { user, token } = useAppSelector((state) => state.auth);
@@ -60,7 +62,7 @@ export function Layout() {
       <Sidebar categories={categories} isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
       
       <div className="flex flex-1 flex-col overflow-hidden lg:pl-64">
-        <Navbar setIsOpen={setIsSidebarOpen} user={user} onLogout={() => dispatch(logout())} />
+        <Navbar setIsOpen={setIsSidebarOpen} user={user} onLogout={() => setIsLogoutDialogOpen(true)} />
         
         <main 
           ref={scrollRef}
@@ -71,6 +73,14 @@ export function Layout() {
           </div>
         </main>
       </div>
+      <LogoutConfirmDialog 
+        open={isLogoutDialogOpen} 
+        onOpenChange={setIsLogoutDialogOpen}
+        onConfirm={() => {
+          setIsLogoutDialogOpen(false);
+          dispatch(logout());
+        }}
+      />
       <Toaster position="top-right" richColors />
     </div>
   );
