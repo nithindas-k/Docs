@@ -7,6 +7,7 @@ export interface Item {
   createdAt: string | number | Date;
   _id: string;
   name: string;
+  user?: string;  // owner's userId — used to detect read-only (linked) items
   category: string;
   person?: string;
   photoUrl?: string; 

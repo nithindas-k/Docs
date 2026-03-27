@@ -10,6 +10,7 @@ import { Persons } from './pages/Persons';
 import { PersonDetail } from './pages/PersonDetail';
 
 import { ItemDetail } from './pages/ItemDetail';
+import { LinkedVaultDetail } from './pages/LinkedVaultDetail';
 
 import { ThemeProvider } from 'next-themes';
 import { Toaster } from './components/ui/sonner';
@@ -28,6 +29,7 @@ function App() {
               <Route path="/persons" element={<Persons />} />
               <Route path="/persons/:id" element={<PersonDetail />} />
               <Route path="/item/:id" element={<ItemDetail />} />
+              <Route path="/linked/:connectionId" element={<LinkedVaultDetail />} />
             </Route>
             </Routes>
           </BrowserRouter>

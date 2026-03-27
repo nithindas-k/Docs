@@ -8,7 +8,18 @@ const encryption_1 = require("../utils/encryption");
 class ItemService {
     async getItemsByCategory(categoryId, userId) {
         const items = await ItemRepository_1.default.findByCategoryIdAndUser(categoryId, userId);
-        // Decrypt fields before sending to client
+        return items.map(item => {
+            const decryptedFields = item.fields.map(field => {
+                if (field.isEncrypted) {
+                    return { ...field, value: (0, encryption_1.decrypt)(field.value) };
+                }
+                return field;
+            });
+            return { ...item.toObject(), fields: decryptedFields };
+        });
+    }
+    async getItemsByPerson(personId, userId) {
+        const items = await ItemRepository_1.default.findByPersonIdAndUser(personId, userId);
         return items.map(item => {
             const decryptedFields = item.fields.map(field => {
                 if (field.isEncrypted) {
@@ -43,6 +54,8 @@ class ItemService {
             category: categoryId,
             title: data.title,
             photoUrl: data.photoUrl,
+            photoUrls: data.photoUrls || [],
+            person: data.person,
             fields: fieldsToSave || [],
         });
     }
@@ -52,15 +65,19 @@ class ItemService {
             return null;
         const fieldsToSave = data.fields?.map((field) => {
             if (field.isEncrypted && !field.value.startsWith('iv:')) {
-                // Only encrypt if not already encrypted
                 return { ...field, value: (0, encryption_1.encrypt)(field.value) };
             }
             return field;
         });
         item.title = data.title;
-        // Only update photoUrl if a new one is provided
         if (data.photoUrl !== undefined) {
             item.photoUrl = data.photoUrl;
+        }
+        if (data.photoUrls !== undefined) {
+            item.photoUrls = data.photoUrls;
+        }
+        if (data.person !== undefined) {
+            item.person = data.person;
         }
         item.fields = fieldsToSave || [];
         await item.save();

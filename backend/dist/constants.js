@@ -4,6 +4,7 @@ exports.STATUS_CODES = exports.MESSAGES = exports.ROUTES = void 0;
 exports.ROUTES = {
     AUTH: {
         GOOGLE: "/auth/google",
+        GOOGLE_CALLBACK: "/auth/google/callback",
         PROFILE: "/auth/profile"
     },
     CATEGORY: {
@@ -14,11 +15,16 @@ exports.ROUTES = {
         BASE: "/items",
         ID: "/items/:id",
         CATEGORY: "/items/category/:categoryId"
+    },
+    PERSON: {
+        BASE: "/persons",
+        ID: "/persons/:id"
     }
 };
 exports.MESSAGES = {
     SUCCESS: "Operation successful",
     CREATED: "Resource created successfully",
+    DELETED: "Resource deleted successfully",
     UNAUTHORIZED: "Unauthorized access",
     FORBIDDEN: "Forbidden access",
     NOT_FOUND: "Resource not found",

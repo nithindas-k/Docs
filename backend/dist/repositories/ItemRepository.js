@@ -8,6 +8,9 @@ class ItemRepository {
     async findByCategoryIdAndUser(categoryId, userId) {
         return Item_1.default.find({ category: categoryId, user: userId });
     }
+    async findByPersonIdAndUser(personId, userId) {
+        return Item_1.default.find({ person: personId, user: userId });
+    }
     async findByIdAndUser(id, userId) {
         return Item_1.default.findOne({ _id: id, user: userId });
     }

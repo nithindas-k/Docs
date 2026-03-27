@@ -55,6 +55,7 @@ export function ItemDetail() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { itemsById, loadingItem } = useAppSelector((state) => state.items);
+  const { user: authUser } = useAppSelector((state) => state.auth);
   const categories = useAppSelector((state) => state.categories.categories);
 
   const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
@@ -65,6 +66,8 @@ export function ItemDetail() {
 
   const item = id ? itemsById[id] : null;
   const category = categories.find(c => c._id === item?.category);
+  // If item.user doesn't match current user, it's a linked (read-only) item
+  const isReadOnly = !!(item?.user && authUser?._id && item.user !== authUser._id);
 
   useEffect(() => {
     if (id) {
@@ -140,22 +143,30 @@ export function ItemDetail() {
           </div>
         </div>
         <div className="flex items-center gap-2 w-full sm:w-auto">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="h-8 sm:h-9 flex-1 sm:flex-none px-3 sm:px-4 gap-2 text-[10px] sm:text-xs font-semibold rounded-lg"
-            onClick={() => setIsEditModalOpen(true)}
-          >
-            <Edit className="h-3.5 w-3.5" /> EDIT
-          </Button>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="h-8 sm:h-9 flex-1 sm:flex-none px-3 sm:px-4 gap-2 text-[10px] sm:text-xs font-semibold rounded-lg text-destructive hover:bg-destructive/5"
-            onClick={() => setIsDeleteModalOpen(true)}
-          >
-            <Trash2 className="h-3.5 w-3.5" /> DELETE
-          </Button>
+          {isReadOnly ? (
+            <span className="text-[9px] font-bold text-amber-600 bg-amber-500/10 border border-amber-500/20 rounded-full px-3 py-1 uppercase tracking-widest">
+              View Only
+            </span>
+          ) : (
+            <>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="h-8 sm:h-9 flex-1 sm:flex-none px-3 sm:px-4 gap-2 text-[10px] sm:text-xs font-semibold rounded-lg"
+                onClick={() => setIsEditModalOpen(true)}
+              >
+                <Edit className="h-3.5 w-3.5" /> EDIT
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="h-8 sm:h-9 flex-1 sm:flex-none px-3 sm:px-4 gap-2 text-[10px] sm:text-xs font-semibold rounded-lg text-destructive hover:bg-destructive/5"
+                onClick={() => setIsDeleteModalOpen(true)}
+              >
+                <Trash2 className="h-3.5 w-3.5" /> DELETE
+              </Button>
+            </>
+          )}
 
         </div>
       </div>

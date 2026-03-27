@@ -11,7 +11,6 @@ class AuthService {
         let user = await UserRepository_1.default.findByGoogleId(data.googleId);
         if (!user) {
             user = await UserRepository_1.default.create(data);
-            // Auto-create default categories for new users
             const userId = user._id;
             const defaultCategories = [
                 { name: 'Aadhaar', icon: 'credit-card' },

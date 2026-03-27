@@ -42,8 +42,10 @@ const DynamicFieldSchema = new mongoose_1.Schema({
 const ItemSchema = new mongoose_1.Schema({
     user: { type: mongoose_1.Schema.Types.ObjectId, ref: 'User', required: true },
     category: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Category', required: true },
+    person: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Person' },
     title: { type: String, required: true },
-    photoUrl: { type: String },
+    photoUrl: { type: String }, // Legacy
+    photoUrls: { type: [String], default: [] },
     fields: [DynamicFieldSchema],
 }, { timestamps: true });
 exports.default = mongoose_1.default.model('Item', ItemSchema);

@@ -10,7 +10,9 @@ const uploadMiddleware_1 = __importDefault(require("../middlewares/uploadMiddlew
 const router = (0, express_1.Router)();
 router.use(authMiddleware_1.authenticate);
 router.get('/category/:categoryId', ItemController_1.default.getItemsByCategory);
-router.post('/', uploadMiddleware_1.default.single('photo'), ItemController_1.default.createItem);
-router.put('/:id', uploadMiddleware_1.default.single('photo'), ItemController_1.default.updateItem);
+router.get('/person/:personId', ItemController_1.default.getItemsByPerson);
+router.get('/:id', ItemController_1.default.getItemById);
+router.post('/', uploadMiddleware_1.default.array('photos', 5), ItemController_1.default.createItem);
+router.put('/:id', uploadMiddleware_1.default.array('photos', 5), ItemController_1.default.updateItem);
 router.delete('/:id', ItemController_1.default.deleteItem);
 exports.default = router;

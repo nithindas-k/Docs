@@ -7,6 +7,7 @@ export interface Profile {
   id: string;
   label: string;
   icon: string | React.ReactNode;
+  badge?: string;
 }
 
 interface ProfileSelectorProps {
@@ -61,6 +62,15 @@ export const ProfileSelector = ({
                     )}
                   </div>
                 </button>
+
+                {/* Badge (e.g. "Linked") */}
+                {profile.badge && (
+                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-sm z-10">
+                    <p className="text-[8px] font-black uppercase tracking-widest text-primary leading-none">
+                      {profile.badge}
+                    </p>
+                  </div>
+                )}
 
                 {/* Management Toolbar - Appears on Hover */}
                 {(onProfileEdit || onProfileDelete) && (

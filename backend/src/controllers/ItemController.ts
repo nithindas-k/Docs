@@ -17,15 +17,44 @@ class ItemController {
   async getItemById(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const item = await ItemService.getItemById(id, req.user!.userId);
+      const myUserId = req.user!.userId;
+
+  
+      let item = await ItemService.getItemById(id, myUserId);
+
       if (!item) {
-        return res.status(STATUS_CODES.NOT_FOUND).json({ message: MESSAGES.NOT_FOUND });
+       
+        const Item = (await import('../models/Item')).default;
+        const Connection = (await import('../models/Connection')).default;
+
+        const rawItem = await Item.findById(id);
+        if (!rawItem) {
+          return res.status(STATUS_CODES.NOT_FOUND).json({ message: MESSAGES.NOT_FOUND });
+        }
+
+        const itemOwnerId = rawItem.user.toString();
+
+        const connection = await Connection.findOne({
+          $or: [
+            { fromUser: myUserId, toUser: itemOwnerId, status: 'accepted' },
+            { fromUser: itemOwnerId, toUser: myUserId, status: 'accepted' },
+          ],
+        });
+
+        if (!connection) {
+          return res.status(STATUS_CODES.NOT_FOUND).json({ message: MESSAGES.NOT_FOUND });
+        }
+
+        // Allowed — return item as-is (no decryption for linked user's encrypted fields for now)
+        item = rawItem.toObject() as any;
       }
+
       res.status(STATUS_CODES.OK).json({ data: item });
     } catch (error) {
       res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: MESSAGES.SERVER_ERROR });
     }
   }
+
 
   async getItemsByPerson(req: Request, res: Response) {
     try {

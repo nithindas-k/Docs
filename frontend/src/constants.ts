@@ -26,7 +26,15 @@ export const API_ROUTES = {
   PERSON: {
     BASE: '/persons',
     ID: (id: string) => `/persons/${id}`,
-  }
+  },
+  CONNECTION: {
+    REQUEST: '/connections/request',
+    PENDING: '/connections/pending',
+    RESPOND: (id: string) => `/connections/respond/${id}`,
+    LINKED: '/connections/linked',
+    DISCONNECT: (id: string) => `/connections/${id}`,
+    LINKED_ITEMS: (userId: string) => `/connections/items/${userId}`,
+  },
 };
 
 export const DEFAULT_CATEGORIES = [
