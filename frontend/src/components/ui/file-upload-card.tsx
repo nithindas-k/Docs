@@ -152,7 +152,7 @@ export const FileUploadCard = React.forwardRef<HTMLDivElement, FileUploadCardPro
             <UploadCloud className="mb-3 sm:mb-4 h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground opacity-50" />
             <p className="text-sm sm:text-base font-bold text-foreground">Choose a file or drag it here.</p>
             <p className="mt-1 text-[10px] sm:text-xs text-muted-foreground">
-              JPEG, PNG, PDF formats, up to 50 MB.
+              JPEG, PNG, PDF formats, up to 10 MB.
             </p>
             <Button variant="outline" size="sm" className="mt-4 pointer-events-none h-8 sm:h-9 text-[11px] sm:text-xs px-6">
               Browse File

@@ -5,6 +5,9 @@ import { Plus, Trash2 } from 'lucide-react';
 import { FileUploadCard, UploadedFile } from './ui/file-upload-card';
 import { ImageCropper } from './ui/image-cropper';
 import { Dialog, DialogContent, DialogTitle, DialogHeader } from './ui/dialog';
+import { toast } from 'sonner';
+
+const MAX_FILE_SIZE = 10 * 1024 * 1024; 
 
 interface Field {
   key: string;
@@ -26,17 +29,27 @@ export function AddItemForm({ categoryName, onSubmit, onBack, isLoading }: AddIt
   const [imageToCrop, setImageToCrop] = useState<{ file: File; src: string } | null>(null);
 
   const handleFilesChange = (files: File[]) => {
+    const validFiles = files.filter(file => {
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error(`File "${file.name}" is too large (max 10MB)`);
+        return false;
+      }
+      return true;
+    });
+
+    if (validFiles.length === 0) return;
+
     // If only one image is picked, show cropper
-    if (files.length === 1 && files[0].type.startsWith('image/')) {
-      const file = files[0];
+    if (validFiles.length === 1 && validFiles[0].type.startsWith('image/')) {
+      const file = validFiles[0];
       const reader = new FileReader();
       reader.onload = () => {
         setImageToCrop({ file, src: reader.result as string });
       };
       reader.readAsDataURL(file);
     } else {
-      // Add all files directly (multiple or non-image)
-      const newFiles = files.map(file => ({
+      // Add all valid files directly
+      const newFiles = validFiles.map(file => ({
         id: `${file.name}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         file,
         progress: 100,
@@ -53,6 +66,11 @@ export function AddItemForm({ categoryName, onSubmit, onBack, isLoading }: AddIt
       const response = await fetch(croppedImageUrl);
       const blob = await response.blob();
       const croppedFile = new File([blob], imageToCrop.file.name, { type: 'image/png' });
+
+      if (croppedFile.size > MAX_FILE_SIZE) {
+        toast.error('The cropped image is too large (max 10MB). Try a smaller crop.');
+        return;
+      }
 
       const normalized = {
         id: `${croppedFile.name}-${Date.now()}`,
