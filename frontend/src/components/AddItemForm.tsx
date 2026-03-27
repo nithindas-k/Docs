@@ -7,7 +7,8 @@ import { ImageCropper } from './ui/image-cropper';
 import { Dialog, DialogContent, DialogTitle, DialogHeader } from './ui/dialog';
 import { toast } from 'sonner';
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; 
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const MAX_PHOTOS = 3;
 
 interface Field {
   key: string;
@@ -17,7 +18,7 @@ interface Field {
 
 interface AddItemFormProps {
   categoryName: string;
-  onSubmit: (data: { title: string; fields: Field[]; photoFiles?: File[] }) => void;
+  onSubmit: (data: { title: string; fields: Field[]; photoFiles?: File[] }) => Promise<void> | void;
   onBack?: () => void;
   isLoading?: boolean;
 }
@@ -38,6 +39,11 @@ export function AddItemForm({ categoryName, onSubmit, onBack, isLoading }: AddIt
     });
 
     if (validFiles.length === 0) return;
+
+    if (uploadedFiles.length + validFiles.length > MAX_PHOTOS) {
+      toast.error(`You can only upload a maximum of ${MAX_PHOTOS} photos`);
+      return;
+    }
 
     // If only one image is picked, show cropper
     if (validFiles.length === 1 && validFiles[0].type.startsWith('image/')) {
@@ -108,32 +114,38 @@ export function AddItemForm({ categoryName, onSubmit, onBack, isLoading }: AddIt
     setFields(updated);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+    const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
 
-    if (!title.trim()) {
-      alert('Title is required');
-      return;
-    }
-
-    const validFields = fields.filter((f) => f.key.trim() || f.value.trim());
-    for (const field of validFields) {
-      if (!field.key.trim() || !field.value.trim()) {
-        alert('All fields must have both key and value');
+      if (!title.trim()) {
+        toast.error('Title is required');
         return;
       }
-    }
 
-    onSubmit({
-      title: title.trim(),
-      fields: validFields,
-      photoFiles: uploadedFiles.map(f => f.file),
-    });
+      const validFields = fields.filter((f) => f.key.trim() || f.value.trim());
+      for (const field of validFields) {
+        if (!field.key.trim() || !field.value.trim()) {
+          toast.error('All fields must have both key and value');
+          return;
+        }
+      }
 
-    setTitle('');
-    setFields([{ key: '', value: '', isEncrypted: false }]);
-    setUploadedFiles([]);
-  };
+      try {
+        await onSubmit({
+          title: title.trim(),
+          fields: validFields,
+          photoFiles: uploadedFiles.map(f => f.file),
+        });
+
+        // ONLY clear if submission was successful
+        setTitle('');
+        setFields([{ key: '', value: '', isEncrypted: false }]);
+        setUploadedFiles([]);
+      } catch (err) {
+        // If error, we DON'T clear the form so user can fix and retry
+        console.error('Submit failed, keeping form data:', err);
+      }
+    };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
