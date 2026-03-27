@@ -23,7 +23,7 @@ export function Layout() {
 
     const lenis = new Lenis({
       wrapper: scrollRef.current,
-      content: scrollRef.current,
+      content: scrollRef.current.firstElementChild as HTMLElement,
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: 'vertical',
@@ -66,10 +66,12 @@ export function Layout() {
         
         <main 
           ref={scrollRef}
-          className="flex-1 overflow-y-auto bg-accent/10 p-4 md:p-6 lg:p-8 outline-none"
+          className="flex-1 overflow-hidden bg-accent/10 outline-none relative"
         >
-          <div className="mx-auto max-w-6xl">
-            <Outlet />
+          <div className="p-4 md:p-6 lg:p-8">
+            <div className="mx-auto max-w-6xl">
+              <Outlet />
+            </div>
           </div>
         </main>
       </div>
