@@ -9,7 +9,7 @@ class AuthService {
     if (!user) {
       user = await UserRepository.create(data);
       
-      // Auto-create default categories for new users
+      
       const userId = user._id;
       const defaultCategories = [
         { name: 'Aadhaar', icon: 'credit-card' },

@@ -13,6 +13,30 @@ export interface UploadedFile {
   status: "uploading" | "completed" | "error";
 }
 
+const FilePreview = ({ file }: { file: File }) => {
+  const [preview, setPreview] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (file.type.startsWith('image/')) {
+      const url = URL.createObjectURL(file);
+      setPreview(url);
+      return () => URL.revokeObjectURL(url);
+    }
+  }, [file]);
+
+  return (
+    <div className="flex h-10 w-10 flex-shrink-0 overflow-hidden items-center justify-center rounded-md bg-muted">
+      {preview ? (
+        <img src={preview} alt="preview" className="h-full w-full object-cover" />
+      ) : (
+        <div className="text-[10px] font-bold text-muted-foreground uppercase">
+          {file.type.split("/")[1]?.toUpperCase().substring(0, 3) || "FILE"}
+        </div>
+      )}
+    </div>
+  );
+};
+
 interface FileUploadCardProps extends React.HTMLAttributes<HTMLDivElement> {
   files: UploadedFile[];
   onFilesChange: (files: File[]) => void;
@@ -144,9 +168,7 @@ export const FileUploadCard = React.forwardRef<HTMLDivElement, FileUploadCardPro
                     className="flex items-center justify-between"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-md bg-muted text-sm font-bold text-muted-foreground">
-                        {file.file.type.split("/")[1]?.toUpperCase().substring(0, 3) || "FILE"}
-                      </div>
+                      <FilePreview file={file.file} />
                       <div className="flex-1">
                         <p className="max-w-[150px] truncate text-sm font-medium text-foreground sm:max-w-xs">
                           {file.file.name}

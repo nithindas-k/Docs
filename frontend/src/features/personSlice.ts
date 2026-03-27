@@ -6,6 +6,7 @@ export interface Person {
   _id: string;
   name: string;
   imageUrl?: string;
+  createdAt: string | number | Date;
 }
 
 interface PersonState {
@@ -27,13 +28,23 @@ export const fetchPersons = createAsyncThunk('persons/fetchAll', async () => {
   return response.data;
 });
 
-export const addPerson = createAsyncThunk('persons/add', async (data: { name: string; imageUrl?: string }) => {
-  const response = await api.post<{ data: Person }>(API_ROUTES.PERSON.BASE, data);
+export const addPerson = createAsyncThunk('persons/add', async (data: { name: string; imageFile?: File }) => {
+  const formData = new FormData();
+  formData.append('name', data.name);
+  if (data.imageFile) {
+    formData.append('photo', data.imageFile);
+  }
+  const response = await api.postFormData<{ data: Person }>(API_ROUTES.PERSON.BASE, formData);
   return response.data;
 });
 
-export const updatePerson = createAsyncThunk('persons/update', async ({ id, data }: { id: string; data: { name?: string; imageUrl?: string } }) => {
-  const response = await api.put<{ data: Person }>(API_ROUTES.PERSON.ID(id), data);
+export const updatePerson = createAsyncThunk('persons/update', async ({ id, data }: { id: string; data: { name?: string; imageFile?: File } }) => {
+  const formData = new FormData();
+  if (data.name) formData.append('name', data.name);
+  if (data.imageFile) {
+    formData.append('photo', data.imageFile);
+  }
+  const response = await api.putFormData<{ data: Person }>(API_ROUTES.PERSON.ID(id), formData);
   return response.data;
 });
 

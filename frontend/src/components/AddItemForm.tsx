@@ -14,32 +14,35 @@ interface Field {
 
 interface AddItemFormProps {
   categoryName: string;
-  onSubmit: (data: { title: string; fields: Field[]; photoFile?: File }) => void;
+  onSubmit: (data: { title: string; fields: Field[]; photoFiles?: File[] }) => void;
+  onBack?: () => void;
   isLoading?: boolean;
 }
 
-export function AddItemForm({ categoryName, onSubmit, isLoading }: AddItemFormProps) {
+export function AddItemForm({ categoryName, onSubmit, onBack, isLoading }: AddItemFormProps) {
   const [title, setTitle] = useState('');
   const [fields, setFields] = useState<Field[]>([{ key: '', value: '', isEncrypted: false }]);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [imageToCrop, setImageToCrop] = useState<{ file: File; src: string } | null>(null);
 
   const handleFilesChange = (files: File[]) => {
-    const file = files[0];
-    if (file && file.type.startsWith('image/')) {
+    // If only one image is picked, show cropper
+    if (files.length === 1 && files[0].type.startsWith('image/')) {
+      const file = files[0];
       const reader = new FileReader();
       reader.onload = () => {
         setImageToCrop({ file, src: reader.result as string });
       };
       reader.readAsDataURL(file);
-    } else if (file) {
-      const normalized = [{
-        id: `${file.name}-${Date.now()}`,
+    } else {
+      // Add all files directly (multiple or non-image)
+      const newFiles = files.map(file => ({
+        id: `${file.name}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         file,
         progress: 100,
         status: 'completed' as const,
-      }];
-      setUploadedFiles(normalized);
+      }));
+      setUploadedFiles(prev => [...prev, ...newFiles]);
     }
   };
 
@@ -58,7 +61,7 @@ export function AddItemForm({ categoryName, onSubmit, isLoading }: AddItemFormPr
         status: 'completed' as const,
       };
 
-      setUploadedFiles([normalized]);
+      setUploadedFiles(prev => [...prev, normalized]);
       setImageToCrop(null);
     } catch (e) {
       console.error('Cropping failed:', e);
@@ -106,7 +109,7 @@ export function AddItemForm({ categoryName, onSubmit, isLoading }: AddItemFormPr
     onSubmit({
       title: title.trim(),
       fields: validFields,
-      photoFile: uploadedFiles[0]?.file,
+      photoFiles: uploadedFiles.map(f => f.file),
     });
 
     setTitle('');
@@ -212,9 +215,14 @@ export function AddItemForm({ categoryName, onSubmit, isLoading }: AddItemFormPr
         </Button>
       </div>
 
-      <div className="flex gap-2">
-        <Button type="submit" disabled={isLoading} className="flex-1">
-          {isLoading ? 'Saving...' : 'Save Item'}
+      <div className="flex gap-2 pt-2">
+        {onBack && (
+          <Button type="button" variant="outline" onClick={onBack} className="px-6 rounded-xl font-bold">
+            Back
+          </Button>
+        )}
+        <Button type="submit" disabled={isLoading} className="flex-1 rounded-xl font-bold">
+          {isLoading ? 'Saving...' : `Save ${categoryName}`}
         </Button>
       </div>
     </form>

@@ -4,7 +4,20 @@ import { encrypt, decrypt } from '../utils/encryption';
 class ItemService {
   async getItemsByCategory(categoryId: string, userId: string) {
     const items = await ItemRepository.findByCategoryIdAndUser(categoryId, userId);
-    // Decrypt fields before sending to client
+   
+    return items.map(item => {
+      const decryptedFields = item.fields.map(field => {
+        if (field.isEncrypted) {
+          return { ...field, value: decrypt(field.value) };
+        }
+        return field;
+      });
+      return { ...item.toObject(), fields: decryptedFields };
+    });
+  }
+
+  async getItemsByPerson(personId: string, userId: string) {
+    const items = await ItemRepository.findByPersonIdAndUser(personId, userId);
     return items.map(item => {
       const decryptedFields = item.fields.map(field => {
         if (field.isEncrypted) {
@@ -37,11 +50,13 @@ class ItemService {
       return field;
     });
 
-    return ItemRepository.create({
+     return ItemRepository.create({
       user: userId as any,
       category: categoryId as any,
       title: data.title,
       photoUrl: data.photoUrl,
+      photoUrls: data.photoUrls || [],
+      person: data.person,
       fields: fieldsToSave || [],
     } as any);
   }
@@ -52,16 +67,22 @@ class ItemService {
 
     const fieldsToSave = data.fields?.map((field: any) => {
       if (field.isEncrypted && !field.value.startsWith('iv:')) {
-        // Only encrypt if not already encrypted
+     
         return { ...field, value: encrypt(field.value) };
       }
       return field;
     });
 
     item.title = data.title;
-    // Only update photoUrl if a new one is provided
+   
     if (data.photoUrl !== undefined) {
       item.photoUrl = data.photoUrl;
+    }
+    if (data.photoUrls !== undefined) {
+      (item as any).photoUrls = data.photoUrls;
+    }
+    if (data.person !== undefined) {
+      item.person = data.person;
     }
     item.fields = fieldsToSave || [];
     await item.save();

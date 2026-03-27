@@ -9,6 +9,8 @@ import { FileUploadPage } from './pages/FileUploadPage';
 import { Persons } from './pages/Persons';
 import { PersonDetail } from './pages/PersonDetail';
 
+import { ItemDetail } from './pages/ItemDetail';
+
 import { ThemeProvider } from 'next-themes';
 
 function App() {
@@ -24,6 +26,7 @@ function App() {
               <Route path="/upload" element={<FileUploadPage />} />
               <Route path="/persons" element={<Persons />} />
               <Route path="/persons/:id" element={<PersonDetail />} />
+              <Route path="/item/:id" element={<ItemDetail />} />
             </Route>
             </Routes>
           </BrowserRouter>

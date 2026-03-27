@@ -20,6 +20,8 @@ export const API_ROUTES = {
   ITEM: {
     BASE: '/items',
     BY_CATEGORY: (id: string) => `/items/category/${id}`,
+    BY_PERSON: (id: string) => `/items/person/${id}`,
+    ID: (id: string) => `/items/${id}`,
   },
   PERSON: {
     BASE: '/persons',

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, ShieldCheck } from "lucide-react";
 import { cn } from "../../lib/utils";
 
 export interface ResourceCardItem {
@@ -45,50 +45,54 @@ export const ResourceCardsGrid = ({ items, className }: ResourceCardsGridProps) 
       initial="hidden"
       animate="visible"
       className={cn(
-        "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3",
+        "grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 xl:grid-cols-3",
         className
       )}
     >
       {items.map((item, index) => (
-        <div key={index} className="group relative">
-          <MotionLink
-            to={item.href}
-            variants={itemVariants}
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.98 }}
-            className="block h-full"
-          >
-            <div className="flex h-full flex-col justify-between rounded-lg border border-border bg-card p-4 sm:p-6 shadow-sm transition-shadow duration-300 hover:shadow-md">
-              <div className="flex flex-col gap-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-4">
+        <MotionLink
+          key={index}
+          to={item.href}
+          variants={itemVariants}
+          whileHover={{ y: -2, transition: { duration: 0.2 } }}
+          className="group relative block w-full outline-none"
+        >
+          <div className="relative h-full rounded-2xl border border-border bg-card p-5 shadow-sm transition-all duration-300 hover:border-primary/20 hover:shadow-md">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-4 min-w-0">
+                <div className="relative h-12 w-12 flex-shrink-0">
+                  <div className="h-full w-full rounded-xl overflow-hidden bg-accent/30 border border-border flex items-center justify-center">
                     {item.iconSrc ? (
-                      <img src={item.iconSrc} alt={`${item.title} icon`} className="h-10 w-10 object-contain" />
-                    ) : item.icon ? (
-                      <div className="flex h-10 w-10 items-center justify-center rounded-md bg-primary/10 text-primary">
-                        {item.icon}
-                      </div>
-                    ) : null}
-                    <div>
-                      <h3 className="text-lg font-semibold text-card-foreground">
-                        {item.title}
-                      </h3>
-                      <p className="text-sm text-muted-foreground">
-                        Last updated: {item.lastUpdated}
-                      </p>
-                    </div>
+                      <img 
+                        src={item.iconSrc} 
+                        alt={item.title} 
+                        className="h-full w-full object-cover" 
+                      />
+                    ) : (
+                      <div className="text-primary">{item.icon || <ShieldCheck className="h-6 w-6" />}</div>
+                    )}
                   </div>
-                  <ArrowUpRight className="h-5 w-5 text-muted-foreground transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1" />
+                </div>
+
+                <div className="flex flex-col min-w-0">
+                  <h3 className="font-bold text-lg tracking-tight text-foreground truncate leading-tight">
+                    {item.title}
+                  </h3>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mt-1">
+                    {item.lastUpdated}
+                  </span>
                 </div>
               </div>
+
+              <div className="flex items-center gap-2">
+                 {item.actions && (
+                    <div className="z-20 relative">{item.actions}</div>
+                 )}
+                 <ArrowUpRight className="h-4 w-4 text-muted-foreground/30 group-hover:text-primary transition-colors" />
+              </div>
             </div>
-          </MotionLink>
-          {item.actions && (
-            <div className="absolute top-4 right-10 z-10">
-              {item.actions}
-            </div>
-          )}
-        </div>
+          </div>
+        </MotionLink>
       ))}
     </motion.div>
   );

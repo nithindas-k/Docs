@@ -11,7 +11,8 @@ export interface IItem extends Document {
   category: Types.ObjectId;
   person?: Types.ObjectId; 
   title: string;
-  photoUrl?: string;
+  photoUrl?: string; // Legacy: back-compat
+  photoUrls?: string[];
   fields: IDynamicField[];
   createdAt: Date;
   updatedAt: Date;
@@ -29,7 +30,8 @@ const ItemSchema: Schema = new Schema(
     category: { type: Schema.Types.ObjectId, ref: 'Category', required: true },
     person: { type: Schema.Types.ObjectId, ref: 'Person' }, 
     title: { type: String, required: true },
-    photoUrl: { type: String },
+    photoUrl: { type: String }, // Legacy
+    photoUrls: { type: [String], default: [] },
     fields: [DynamicFieldSchema],
   },
   { timestamps: true }

@@ -1,31 +1,22 @@
 import { useState } from "react";
-import { MoreVertical, Edit2, Trash, Plus, Users } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Plus, Users } from "lucide-react";
 import { PersonFormCard } from "../components/ui/person-form-card";
-import { ResourceCardsGrid } from "../components/ui/cards-grid";
 import { Button } from "../components/ui/button";
-import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle } from "../components/ui/dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
-} from "../components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../components/ui/dialog";
 import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "../features/hooks";
 import { addPerson, updatePerson, deletePerson, Person } from "../features/personSlice";
-
-
+import { ProfileSelector } from "../components/ui/profile-selector";
 
 export function Persons() {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { persons, loading, isAdding } = useAppSelector((state) => state.persons);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingPerson, setEditingPerson] = useState<Person | null>(null);
 
-
-
-  const handleAddSubmit = async (data: { name: string; imageUrl?: string }) => {
+  const handleAddSubmit = async (data: { name: string; imageFile?: File }) => {
     try {
       await dispatch(addPerson(data)).unwrap();
       setIsAddDialogOpen(false);
@@ -35,7 +26,7 @@ export function Persons() {
     }
   };
 
-  const handleEditSubmit = async (data: { name: string; imageUrl?: string }) => {
+  const handleEditSubmit = async (data: { name: string; imageFile?: File }) => {
     if (!editingPerson) return;
     try {
       await dispatch(updatePerson({ id: editingPerson._id, data })).unwrap();
@@ -46,8 +37,10 @@ export function Persons() {
     }
   };
 
-  const handleDelete = async (id: string, name: string) => {
-    if (!confirm(`Are you sure you want to delete ${name}'s profile? All linked documents will remain but the profile association will be lost.`)) return;
+  const handleDelete = async (id: string) => {
+    const person = persons.find(p => p._id === id);
+    if (!person) return;
+    if (!confirm(`Are you sure you want to delete ${person.name}'s profile? All linked documents will remain but the profile association will be lost.`)) return;
     try {
       await dispatch(deletePerson(id)).unwrap();
       toast.success("Profile deleted successfully");
@@ -56,46 +49,77 @@ export function Persons() {
     }
   };
 
+  // Format persons for the ProfileSelector
+  const profiles = persons.map(p => ({
+    id: p._id,
+    label: p.name,
+    icon: p.imageUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${p.name}&backgroundColor=111,222,333&fontFamily=Inter&fontWeight=700&fontSize=40`
+  }));
+
   return (
-    <div className="flex flex-col gap-6 w-full">
-      <div className="flex justify-between items-center sm:flex-row flex-col gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl flex items-center gap-3">
-            <Users className="w-8 h-8 text-primary" />
-            Family Profiles
-          </h1>
-          <p className="text-muted-foreground mt-2 text-sm sm:text-base">
-            Manage document profiles for your family members and loved ones.
+    <div className="flex flex-col gap-6 w-full py-4">
+      {/* Header - Minimal and centered above profiles */}
+      <div className="flex flex-col items-center mb-0 transition-all duration-700 animate-in fade-in slide-in-from-top-4">
+          <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-6 shadow-sm border-2 border-primary/5">
+            <Users className="h-7 w-7" />
+          </div>
+          <p className="text-muted-foreground font-bold tracking-[0.2em] text-[10px] uppercase opacity-60">
+            Secure Member Gate
           </p>
-        </div>
-        
-        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="w-full sm:w-auto shadow-sm gap-2 whitespace-nowrap">
-              <Plus className="w-5 h-5" />
-              Add Person
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="p-0 bg-transparent border-none shadow-none w-full max-w-lg min-h-[0] items-center flex justify-center h-auto sm:h-auto overflow-hidden sm:overflow-visible my-auto focus:outline-none focus-visible:outline-none sm:rounded-none m-0">
-            <div className="w-full overflow-y-auto max-h-[90vh] sm:max-h-none sm:overflow-visible scrollbar-hide flex flex-col justify-end sm:justify-center mt-auto sm:mt-0 pb-0 sm:pb-0">
-              <DialogHeader className="sr-only">
-                <DialogTitle>Add Family Profile</DialogTitle>
-              </DialogHeader>
-              <PersonFormCard
-                onSubmit={handleAddSubmit}
-                onCancel={() => setIsAddDialogOpen(false)}
-                isLoading={isAdding}
-                className="w-full mx-auto md:w-[450px]"
-              />
-            </div>
-          </DialogContent>
-        </Dialog>
       </div>
+      
+      {loading ? (
+        <div className="flex-1 flex flex-col items-center justify-center p-12 gap-4">
+             <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary/30 border-t-2 border-t-primary" />
+             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest animate-pulse">Establishing Trust...</p>
+        </div>
+      ) : persons.length === 0 ? (
+        <div className="flex-1 flex flex-col items-center justify-center p-12 text-center animate-in fade-in zoom-in duration-700">
+          <div className="flex h-24 w-24 items-center justify-center rounded-3xl bg-muted/30 border-4 border-dashed border-muted mb-8 text-muted-foreground/40">
+            <Plus className="h-10 w-10" />
+          </div>
+          <h2 className="text-2xl font-bold mb-3 tracking-tight">Empty Vault</h2>
+          <p className="text-muted-foreground max-w-[360px] mb-10 text-sm font-medium leading-relaxed">
+            Create your first family member profile to start organizing secure documents.
+          </p>
+          <Button onClick={() => setIsAddDialogOpen(true)} className="rounded-2xl h-12 px-10 gap-2 font-bold uppercase tracking-[0.15em] text-[10px] shadow-lg hover:translate-y-[-2px] transition-all duration-300">
+            <Plus className="h-4 w-4" />
+            Initialize Vault
+          </Button>
+        </div>
+      ) : (
+        <ProfileSelector 
+          title="Choose a person"
+          profiles={profiles}
+          onProfileSelect={(id) => navigate(`/persons/${id}`)}
+          onProfileEdit={(id) => setEditingPerson(persons.find(p => p._id === id) || null)}
+          onProfileDelete={handleDelete}
+          onAddProfile={() => setIsAddDialogOpen(true)}
+          className="animate-in fade-in duration-1000 slide-in-from-bottom-6"
+        />
+      )}
+
+      {/* Add Dialog */}
+      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <DialogContent className="p-0 bg-transparent border-none shadow-none w-full max-w-lg items-center flex justify-center focus:outline-none focus-visible:outline-none">
+          <div className="w-full">
+            <DialogHeader className="sr-only">
+              <DialogTitle>Add Family Profile</DialogTitle>
+            </DialogHeader>
+            <PersonFormCard
+              onSubmit={handleAddSubmit}
+              onCancel={() => setIsAddDialogOpen(false)}
+              isLoading={isAdding}
+              className="w-full md:w-[450px]"
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Edit Dialog */}
       <Dialog open={!!editingPerson} onOpenChange={(open) => !open && setEditingPerson(null)}>
-        <DialogContent className="p-0 bg-transparent border-none shadow-none w-full max-w-lg min-h-[0] items-center flex justify-center h-auto sm:h-auto overflow-hidden sm:overflow-visible my-auto focus:outline-none focus-visible:outline-none sm:rounded-none m-0">
-          <div className="w-full overflow-y-auto max-h-[90vh] sm:max-h-none sm:overflow-visible scrollbar-hide flex flex-col justify-end sm:justify-center mt-auto sm:mt-0 pb-0 sm:pb-0">
+        <DialogContent className="p-0 bg-transparent border-none shadow-none w-full max-w-lg items-center flex justify-center focus:outline-none focus-visible:outline-none">
+          <div className="w-full">
              <DialogHeader className="sr-only">
                 <DialogTitle>Edit Family Profile</DialogTitle>
               </DialogHeader>
@@ -105,81 +129,12 @@ export function Persons() {
                 onSubmit={handleEditSubmit}
                 onCancel={() => setEditingPerson(null)}
                 isLoading={isAdding}
-                className="w-full mx-auto md:w-[450px]"
+                className="w-full md:w-[450px]"
               />
             )}
           </div>
         </DialogContent>
       </Dialog>
-
-      {loading ? (
-        <div className="flex justify-center p-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-        </div>
-      ) : persons.length === 0 ? (
-        <div className="flex flex-col items-center justify-center p-12 mt-8 text-center bg-card border border-dashed rounded-xl w-full max-w-full">
-          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 mb-4 text-primary">
-            <Users className="h-10 w-10" />
-          </div>
-          <h2 className="text-xl font-semibold mb-2 text-foreground">No Family Profiles Yet</h2>
-          <p className="text-muted-foreground max-w-[400px] mb-6">
-            Create profiles for your family members to securely organize and store their sensitive documents.
-          </p>
-          <Button onClick={() => setIsAddDialogOpen(true)} variant="outline" className="gap-2">
-            <Plus className="h-4 w-4" />
-            Add First Person
-          </Button>
-        </div>
-      ) : (
-        <div className="mt-4">
-          <ResourceCardsGrid 
-            items={persons.map(person => ({
-               icon: (
-                  <Avatar className="h-10 w-10 border-2 border-primary/20 bg-primary/5 shadow-sm">
-                    <AvatarImage src={person.imageUrl} alt={person.name} />
-                    <AvatarFallback className="font-bold text-primary">
-                      {person.name.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-               ),
-               title: person.name,
-               lastUpdated: `Collection Ready`,
-               href: `/persons/${person._id}`,
-               actions: (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild onClick={(e) => e.preventDefault()}>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-muted">
-                      <MoreVertical className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-40 backdrop-blur-md bg-background/80">
-                    <DropdownMenuItem 
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setEditingPerson(person);
-                      }}
-                      className="gap-2 cursor-pointer"
-                    >
-                      <Edit2 className="h-4 w-4" />
-                      Edit Profile
-                    </DropdownMenuItem>
-                    <DropdownMenuItem 
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleDelete(person._id, person.name);
-                      }}
-                      className="gap-2 text-destructive focus:text-destructive cursor-pointer"
-                    >
-                      <Trash className="h-4 w-4" />
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-               )
-            }))}
-          />
-        </div>
-      )}
     </div>
   );
 }

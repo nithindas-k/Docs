@@ -12,15 +12,15 @@ class PersonService {
 
     if (data.imageUrl && data.imageUrl.startsWith('data:image')) {
       try { 
-        // Extract base64 content
+     
         const base64Data = data.imageUrl.split(',')[1];
         const buffer = Buffer.from(base64Data, 'base64');
         
-        // Upload to Cloudinary
+        
         finalImageUrl = await uploadToCloudinary(buffer, `${data.name}_profile`);
       } catch (error) {
         console.error('Cloudinary Upload Error:', error);
-        // Fallback to data URL if upload fails (though not ideal)
+      
       }
     }
 

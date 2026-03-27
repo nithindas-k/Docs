@@ -1,6 +1,6 @@
 import * as React from "react";
 import { motion } from "framer-motion";
-import { Plus, X, Loader2 } from "lucide-react";
+import { Plus, Loader2 } from "lucide-react";
 import { cn } from "../../lib/utils";
 
 import { Button } from "./button";
@@ -15,7 +15,7 @@ interface PersonFormCardProps {
     name: string;
     imageUrl?: string;
   };
-  onSubmit: (data: { name: string; imageUrl?: string }) => void;
+  onSubmit: (data: { name: string; imageFile?: File }) => void;
   onCancel: () => void;
   isLoading?: boolean;
   className?: string;
@@ -30,14 +30,15 @@ export const PersonFormCard: React.FC<PersonFormCardProps> = ({
 }) => {
   const [name, setName] = React.useState(initialData?.name || "");
   const [imageUrl, setImageUrl] = React.useState<string | undefined>(initialData?.imageUrl);
+  const [imageFile, setImageFile] = React.useState<File | undefined>();
   const [tempImage, setTempImage] = React.useState<string | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 1024 * 1024) {
-        toast.error("Image too large (Max 1MB)");
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error("Image too large (Max 2MB)");
         return;
       }
       const reader = new FileReader();
@@ -48,14 +49,24 @@ export const PersonFormCard: React.FC<PersonFormCardProps> = ({
     }
   };
 
-  const onCropComplete = (croppedImage: string) => {
-    setImageUrl(croppedImage);
+  const onCropComplete = async (croppedImageUrl: string) => {
+    setImageUrl(croppedImageUrl);
     setTempImage(null);
+    
+    // Convert base64/blob URL to File object
+    try {
+      const response = await fetch(croppedImageUrl);
+      const blob = await response.blob();
+      const file = new File([blob], "profile.png", { type: "image/png" });
+      setImageFile(file);
+    } catch (e) {
+      console.error("Failed to convert image:", e);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({ name, imageUrl });
+    onSubmit({ name, imageFile });
   };
 
   const FADE_IN_VARIANTS = {
@@ -96,9 +107,6 @@ export const PersonFormCard: React.FC<PersonFormCardProps> = ({
                 <motion.h3 variants={FADE_IN_VARIANTS} className="text-xl font-semibold text-foreground">
                 {initialData ? "Edit Person" : "Add Person"}
                 </motion.h3>
-                <Button variant="ghost" size="icon" onClick={onCancel} aria-label="Close">
-                <X className="h-4 w-4" />
-                </Button>
             </div>
 
             <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-6 md:grid md:grid-cols-3 md:gap-8">

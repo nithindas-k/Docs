@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState, AppDispatch } from '../features/store';
 import { fetchItemsByCategory } from '../features/itemSlice';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '../components/ui/card';
 import { Button } from '../components/ui/button';
-import { Plus, Eye, EyeOff, Camera, Edit2, Trash2 } from 'lucide-react';
+import { Plus, Camera, Edit2, Trash2, ShieldCheck } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -17,6 +16,7 @@ import {
 import { AddItemForm } from '../components/AddItemForm';
 import { EditItemForm } from '../components/EditItemForm';
 import { DeleteConfirmDialog } from '../components/DeleteConfirmDialog';
+import { ResourceCardsGrid } from '../components/ui/cards-grid';
 import { api } from '../services/api';
 import { API_ROUTES } from '../constants';
 import type { Item } from '../features/itemSlice';
@@ -24,7 +24,6 @@ import type { Item } from '../features/itemSlice';
 export function CategoryDetail() {
   const { id } = useParams<{ id: string }>();
   const dispatch = useDispatch<AppDispatch>();
-  const [showSensitive, setShowSensitive] = React.useState<Record<string, boolean>>({});
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingItem, setEditingItem] = useState<Item | null>(null);
@@ -41,12 +40,7 @@ export function CategoryDetail() {
     }
   }, [id, dispatch]);
 
-  const toggleSensitive = (itemId: string, fieldKey: string) => {
-    setShowSensitive(prev => ({
-      ...prev,
-      [`${itemId}-${fieldKey}`]: !prev[`${itemId}-${fieldKey}`]
-    }));
-  };
+
 
   const handleAddItem = async (data: { title: string; fields: Array<{ key: string; value: string; isEncrypted: boolean }>; photoFile?: File }) => {
     if (!id) return;
@@ -180,101 +174,63 @@ export function CategoryDetail() {
           </Dialog>
         </div>
       ) : (
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {items.map(item => (
-            <Card key={item._id} className="overflow-hidden relative group">
-              <div className="absolute top-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
-                <Dialog open={editingItem?._id === item._id} onOpenChange={(open) => !open && setEditingItem(null)}>
-                  <DialogTrigger asChild>
-                    <Button 
-                      variant="secondary" 
-                      size="sm" 
-                      className="h-8 gap-1"
-                      onClick={() => setEditingItem(item)}
-                    >
-                      <Edit2 className="h-3.5 w-3.5" />
-                      <span className="hidden sm:inline">Edit</span>
-                    </Button>
-                  </DialogTrigger>
-                  {editingItem && (
-                    <DialogContent className="max-w-md">
-                      <DialogHeader>
-                        <DialogTitle>Edit {category?.name}</DialogTitle>
-                        <DialogDescription>
-                          Update your {category?.name} details securely.
-                        </DialogDescription>
-                      </DialogHeader>
-                      <EditItemForm
-                        categoryName={category?.name || 'Item'}
-                        itemTitle={editingItem.title}
-                        itemFields={editingItem.fields.map(f => ({
-                          key: f.key,
-                          value: f.value,
-                          isEncrypted: f.isEncrypted ?? false,
-                        }))}
-                        itemPhotoUrl={editingItem.photoUrl}
-                        onSubmit={handleUpdateItem}
-                        isLoading={isSubmitting}
-                      />
-                    </DialogContent>
-                  )}
-                </Dialog>
-
-                <Button 
-                  variant="secondary" 
-                  size="sm" 
-                  className="h-8 gap-1 text-destructive hover:text-destructive hover:bg-destructive/10"
-                  onClick={() => setDeletingItem(item)}
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">Delete</span>
-                </Button>
-              </div>
-
-              <CardHeader className="bg-accent/30 border-b pb-4">
-                <CardTitle>{item.title}</CardTitle>
-                <CardDescription>Added on {new Date(item.createdAt).toLocaleDateString()}</CardDescription>
-              </CardHeader>
-              <CardContent className="pt-6 space-y-4">
-                {item.photoUrl && (
-                  <div className="rounded-lg overflow-hidden bg-accent/20">
-                    <img 
-                      src={item.photoUrl} 
-                      alt={item.title}
-                      className="w-full h-48 object-cover"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).style.display = 'none';
-                      }}
-                    />
-                  </div>
-                )}
-                {item.fields.map((field: any) => (
-                  <div key={field.key} className="space-y-1">
-                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{field.key}</label>
-                    <div className="flex items-center justify-between bg-accent/20 rounded-md p-2">
-                      <span className="text-sm font-mono truncate">
-                        {field.isEncrypted && !showSensitive[`${item._id}-${field.key}`] 
-                          ? '••••••••••••••••' 
-                          : field.value}
-                      </span>
-                      {field.isEncrypted && (
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          className="h-6 w-6 text-muted-foreground hover:text-foreground"
-                          onClick={() => toggleSensitive(item._id, field.key)}
-                        >
-                          {showSensitive[`${item._id}-${field.key}`] ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <ResourceCardsGrid items={items.map(item => ({
+          icon: <ShieldCheck className="w-5 h-5 text-primary" />,
+          iconSrc: item.photoUrl,
+          title: item.title,
+          lastUpdated: new Date(item.createdAt).toLocaleDateString("en-GB", { 
+            day: "numeric", 
+            month: "short", 
+            year: "numeric" 
+          }),
+          href: `/item/${item._id}`,
+          actions: (
+            <div className="flex gap-1" onClick={(e) => e.preventDefault()}>
+               <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 rounded-full hover:bg-primary/10 hover:text-primary transition-colors"
+                onClick={() => setEditingItem(item)}
+              >
+                <Edit2 className="h-4 w-4" />
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 rounded-full hover:bg-destructive/10 hover:text-destructive transition-colors"
+                onClick={() => setDeletingItem(item)}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          )
+        }))} />
       )}
+
+      <Dialog open={editingItem?._id !== undefined && editingItem?._id !== null} onOpenChange={(open) => !open && setEditingItem(null)}>
+        {editingItem && (
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Edit {category?.name}</DialogTitle>
+              <DialogDescription>
+                Update your {category?.name} details securely.
+              </DialogDescription>
+            </DialogHeader>
+            <EditItemForm
+              categoryName={category?.name || 'Item'}
+              itemTitle={editingItem.title}
+              itemFields={editingItem.fields.map(f => ({
+                key: f.key,
+                value: f.value,
+                isEncrypted: f.isEncrypted ?? false,
+              }))}
+              itemPhotoUrl={editingItem.photoUrl}
+              onSubmit={handleUpdateItem}
+              isLoading={isSubmitting}
+            />
+          </DialogContent>
+        )}
+      </Dialog>
 
       <DeleteConfirmDialog
         open={!!deletingItem}

@@ -5,6 +5,10 @@ class ItemRepository {
     return Item.find({ category: categoryId, user: userId });
   }
 
+  async findByPersonIdAndUser(personId: string, userId: string): Promise<IItem[]> {
+    return Item.find({ person: personId, user: userId });
+  }
+
   async findByIdAndUser(id: string, userId: string): Promise<IItem | null> {
     return Item.findOne({ _id: id, user: userId });
   }

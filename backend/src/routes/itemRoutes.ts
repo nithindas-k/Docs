@@ -8,8 +8,10 @@ const router = Router();
 router.use(authenticate);
 
 router.get('/category/:categoryId', ItemController.getItemsByCategory);
-router.post('/', upload.single('photo'), ItemController.createItem);
-router.put('/:id', upload.single('photo'), ItemController.updateItem);
+router.get('/person/:personId', ItemController.getItemsByPerson);
+router.get('/:id', ItemController.getItemById);
+router.post('/', upload.array('photos', 5), ItemController.createItem);
+router.put('/:id', upload.array('photos', 5), ItemController.updateItem);
 router.delete('/:id', ItemController.deleteItem);
 
 export default router;

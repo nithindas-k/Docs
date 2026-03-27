@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 import PersonService from '../services/PersonService';
 import { STATUS_CODES, MESSAGES } from '../constants';
 
+import { uploadToCloudinary } from '../utils/cloudinary';
+
 class PersonController {
   async getPersons(req: Request, res: Response) {
     try {
@@ -14,7 +16,28 @@ class PersonController {
 
   async createPerson(req: Request, res: Response) {
     try {
-      const person = await PersonService.createPerson(req.user!.userId, req.body);
+      const { name } = req.body;
+      const file = (req as any).file;
+
+      if (!name) {
+        return res.status(STATUS_CODES.BAD_REQUEST).json({ message: 'Name is required' });
+      }
+
+      let imageUrl: string | undefined;
+      if (file) {
+        try {
+          imageUrl = await uploadToCloudinary(file.buffer, file.originalname, 'persons');
+        } catch (uploadError) {
+          console.error('Cloudinary Upload Error (person create):', uploadError);
+          return res.status(STATUS_CODES.BAD_REQUEST).json({ message: 'Profile image upload failed' });
+        }
+      }
+
+      const person = await PersonService.createPerson(req.user!.userId, {
+        name,
+        imageUrl,
+      });
+
       res.status(STATUS_CODES.CREATED).json({
         message: MESSAGES.CREATED,
         data: person,
@@ -27,7 +50,24 @@ class PersonController {
   async updatePerson(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const person = await PersonService.updatePerson(req.user!.userId, id, req.body);
+      const { name } = req.body;
+      const file = (req as any).file;
+
+      let imageUrl: string | undefined;
+      if (file) {
+        try {
+          imageUrl = await uploadToCloudinary(file.buffer, file.originalname, 'persons');
+        } catch (uploadError) {
+          console.error('Cloudinary Upload Error (person update):', uploadError);
+          return res.status(STATUS_CODES.BAD_REQUEST).json({ message: 'Profile image upload failed' });
+        }
+      }
+
+      const person = await PersonService.updatePerson(req.user!.userId, id, {
+        name,
+        imageUrl: imageUrl || undefined,
+      });
+
       if (!person) {
         return res.status(STATUS_CODES.NOT_FOUND).json({ message: MESSAGES.NOT_FOUND });
       }
