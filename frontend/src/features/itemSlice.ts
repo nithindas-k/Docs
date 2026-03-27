@@ -8,11 +8,13 @@ export interface Item {
   _id: string;
   name: string;
   category: string;
-  photoUrl?: string; // Legacy
+  person?: string;
+  photoUrl?: string; 
   photoUrls?: string[];
   fields: Array<{ key: string; value: string; isEncrypted?: boolean }>;
   lastAccessed: string;
 }
+
 
 interface ItemState {
   itemsByCategory: Record<string, Item[]>;
@@ -59,10 +61,11 @@ export const fetchItemsByPerson = createAsyncThunk(
 export const updateItem = createAsyncThunk<Item, { id: string; data: FormData }>(
   'items/update',
   async ({ id, data }) => {
-    const response = await api.put<{ data: Item }>(API_ROUTES.ITEM.ID(id), data);
+    const response = await api.putFormData<{ data: Item }>(API_ROUTES.ITEM.ID(id), data);
     return response.data;
   }
 );
+
 
 export const deleteItem = createAsyncThunk<string, string>(
   'items/delete',

@@ -15,6 +15,7 @@ interface DeleteConfirmDialogProps {
   itemTitle: string;
   onConfirm: () => void;
   isLoading?: boolean;
+  type?: string;
 }
 
 export function DeleteConfirmDialog({
@@ -23,6 +24,7 @@ export function DeleteConfirmDialog({
   itemTitle,
   onConfirm,
   isLoading,
+  type = 'Item',
 }: DeleteConfirmDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -32,8 +34,9 @@ export function DeleteConfirmDialog({
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10">
               <AlertTriangle className="h-5 w-5 text-destructive" />
             </div>
-            <DialogTitle>Delete Item?</DialogTitle>
+            <DialogTitle>Delete {type}?</DialogTitle>
           </div>
+
           <DialogDescription className="mt-2">
             This will permanently delete <span className="font-semibold text-foreground">"{itemTitle}"</span>. This action cannot be undone.
           </DialogDescription>

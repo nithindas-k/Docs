@@ -12,6 +12,7 @@ import { PersonDetail } from './pages/PersonDetail';
 import { ItemDetail } from './pages/ItemDetail';
 
 import { ThemeProvider } from 'next-themes';
+import { Toaster } from './components/ui/sonner';
 
 function App() {
   return (
@@ -30,9 +31,11 @@ function App() {
             </Route>
             </Routes>
           </BrowserRouter>
+          <Toaster position="top-center" richColors />
       </ThemeProvider>
     </Provider>
   );
 }
+
 
 export default App;

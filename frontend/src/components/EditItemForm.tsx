@@ -17,7 +17,7 @@ interface EditItemFormProps {
   itemTitle: string;
   itemFields: Field[];
   itemPhotoUrl?: string;
-  onSubmit: (data: { title: string; fields: Field[]; photoFile?: File }) => void;
+  onSubmit: (data: { title: string; fields: Field[]; photoFiles?: File[] }) => void;
   isLoading?: boolean;
 }
 
@@ -40,6 +40,7 @@ export function EditItemForm({
           {
             id: `existing-${Date.now()}`,
             file: new File([], 'existing-image', { type: 'image/*' }),
+            preview: itemPhotoUrl,
             progress: 100,
             status: 'completed',
           },
@@ -57,6 +58,7 @@ export function EditItemForm({
         {
           id: `existing-${Date.now()}`,
           file: new File([], 'existing-image', { type: 'image/*' }),
+          preview: itemPhotoUrl,
           progress: 100,
           status: 'completed',
         },
@@ -145,12 +147,19 @@ export function EditItemForm({
       }
     }
 
+    // Only send files that are NEWLY uploaded (not the size-0 placeholders for existing images)
+    const newFiles = uploadedFiles
+      .filter(f => f.file && f.file.size > 0)
+      .map(f => f.file);
+
     onSubmit({
       title: title.trim(),
       fields: validFields,
-      photoFile: uploadedFiles[0]?.file,
+      photoFiles: newFiles,
     });
   };
+
+
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">

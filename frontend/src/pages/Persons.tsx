@@ -9,6 +9,7 @@ import { useAppDispatch, useAppSelector } from "../features/hooks";
 import { addPerson, updatePerson, deletePerson, Person } from "../features/personSlice";
 import { ProfileSelector } from "../components/ui/profile-selector";
 import AnimatedShaderBackground from "../components/ui/animated-shader-background";
+import { DeleteConfirmDialog } from "../components/DeleteConfirmDialog";
 
 export function Persons() {
   const dispatch = useAppDispatch();
@@ -16,6 +17,8 @@ export function Persons() {
   const { persons, loading, isAdding } = useAppSelector((state) => state.persons);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingPerson, setEditingPerson] = useState<Person | null>(null);
+  const [deletingPerson, setDeletingPerson] = useState<Person | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleAddSubmit = async (data: { name: string; imageFile?: File }) => {
     try {
@@ -38,17 +41,20 @@ export function Persons() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    const person = persons.find(p => p._id === id);
-    if (!person) return;
-    if (!confirm(`Are you sure you want to delete ${person.name}'s profile? All linked documents will remain but the profile association will be lost.`)) return;
+  const handleDelete = async () => {
+    if (!deletingPerson) return;
+    setIsDeleting(true);
     try {
-      await dispatch(deletePerson(id)).unwrap();
-      toast.success("Profile deleted successfully");
+      await dispatch(deletePerson(deletingPerson._id)).unwrap();
+      toast.success(`${deletingPerson.name}'s profile deleted`);
+      setDeletingPerson(null);
     } catch (error) {
       toast.error("Failed to delete profile");
+    } finally {
+      setIsDeleting(false);
     }
   };
+
 
   // Format persons for the ProfileSelector
   const profiles = persons.map(p => ({
@@ -95,8 +101,9 @@ export function Persons() {
           profiles={profiles}
           onProfileSelect={(id) => navigate(`/persons/${id}`)}
           onProfileEdit={(id) => setEditingPerson(persons.find(p => p._id === id) || null)}
-          onProfileDelete={handleDelete}
+          onProfileDelete={(id) => setDeletingPerson(persons.find(p => p._id === id) || null)}
           onAddProfile={() => setIsAddDialogOpen(true)}
+
           className="animate-in fade-in duration-1000 slide-in-from-bottom-6"
         />
       )}
@@ -137,6 +144,16 @@ export function Persons() {
           </div>
         </DialogContent>
       </Dialog>
+
+
+      <DeleteConfirmDialog
+        open={!!deletingPerson}
+        onOpenChange={(open) => !open && setDeletingPerson(null)}
+        itemTitle={deletingPerson?.name || ''}
+        onConfirm={handleDelete}
+        isLoading={isDeleting}
+        type="Profile"
+      />
     </div>
   );
 }

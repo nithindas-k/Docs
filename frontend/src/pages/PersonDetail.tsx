@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle } from 
 import { AddItemForm } from "../components/AddItemForm";
 import { useAppDispatch, useAppSelector } from "../features/hooks";
 import { fetchItemsByPerson } from "../features/itemSlice";
+import { setCurrentPerson } from "../features/authSlice";
 import { api } from "../services/api";
 import { API_ROUTES } from "../constants";
 import { toast } from "sonner";
@@ -35,6 +36,7 @@ export function PersonDetail() {
   useEffect(() => {
     if (id) {
       dispatch(fetchItemsByPerson(id));
+      dispatch(setCurrentPerson(id));
     }
   }, [id, dispatch]);
 

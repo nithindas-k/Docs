@@ -13,6 +13,7 @@ export interface User {
 interface AuthState {
   user: User | null;
   token: string | null;
+  currentPersonId: string | null;
   loading: boolean;
   error: string | null;
 }
@@ -20,6 +21,7 @@ interface AuthState {
 const initialState: AuthState = {
   user: null,
   token: localStorage.getItem('lockr_token'),
+  currentPersonId: localStorage.getItem('lockr_current_person'),
   loading: false,
   error: null,
 };
@@ -39,10 +41,20 @@ const authSlice = createSlice({
       state.error = null;
       localStorage.setItem('lockr_token', action.payload.token);
     },
+    setCurrentPerson(state, action: PayloadAction<string | null>) {
+      state.currentPersonId = action.payload;
+      if (action.payload) {
+        localStorage.setItem('lockr_current_person', action.payload);
+      } else {
+        localStorage.removeItem('lockr_current_person');
+      }
+    },
     logout(state) {
       state.user = null;
       state.token = null;
+      state.currentPersonId = null;
       localStorage.removeItem('lockr_token');
+      localStorage.removeItem('lockr_current_person');
     },
   },
   extraReducers: (builder) => {
@@ -63,5 +75,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { loginSuccess, logout } = authSlice.actions;
+export const { loginSuccess, logout, setCurrentPerson } = authSlice.actions;
 export default authSlice.reducer;

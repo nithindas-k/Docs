@@ -12,6 +12,8 @@ import {
   Trash2,
   Edit
 } from "lucide-react";
+import { toast } from "sonner";
+import { DeleteConfirmDialog } from "../components/DeleteConfirmDialog";
 import { Button } from "../components/ui/button";
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../components/ui/dialog";
@@ -58,6 +60,8 @@ export function ItemDetail() {
   const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const item = id ? itemsById[id] : null;
   const category = categories.find(c => c._id === item?.category);
@@ -70,24 +74,41 @@ export function ItemDetail() {
 
   const handleDelete = async () => {
     if (!id || !item) return;
-    if (window.confirm(`Are you sure you want to delete ${item.title}?`)) {
-      await dispatch(deleteItem(id));
+    setIsDeleting(true);
+    try {
+      await dispatch(deleteItem(id)).unwrap();
+      toast.success(`${item.title} deleted successfully`);
       navigate(-1);
+    } catch (error) {
+      toast.error("Failed to delete item");
+    } finally {
+      setIsDeleting(false);
+      setIsDeleteModalOpen(false);
     }
   };
 
-  const handleEditSubmit = async (data: { title: string; fields: any[]; photoFile?: File }) => {
+
+  const handleEditSubmit = async (data: { title: string; fields: any[]; photoFiles?: File[] }) => {
     if (!id) return;
-    const formData = new FormData();
-    formData.append('title', data.title);
-    formData.append('fields', JSON.stringify(data.fields));
-    if (data.photoFile && data.photoFile.size > 0) {
-      formData.append('photo', data.photoFile);
+    try {
+      const formData = new FormData();
+      formData.append('title', data.title);
+      formData.append('fields', JSON.stringify(data.fields));
+
+      if (data.photoFiles && data.photoFiles.length > 0) {
+        data.photoFiles.forEach(file => {
+          formData.append('photos', file);
+        });
+      }
+
+      await dispatch(updateItem({ id, data: formData })).unwrap();
+      toast.success(`${data.title} updated successfully`);
+      setIsEditModalOpen(false);
+    } catch (error) {
+      toast.error("Failed to update item");
     }
-    
-    await dispatch(updateItem({ id, data: formData }));
-    setIsEditModalOpen(false);
   };
+
 
   if (loadingItem && !item) {
     return (
@@ -131,10 +152,11 @@ export function ItemDetail() {
             variant="outline" 
             size="sm" 
             className="h-8 sm:h-9 flex-1 sm:flex-none px-3 sm:px-4 gap-2 text-[10px] sm:text-xs font-semibold rounded-lg text-destructive hover:bg-destructive/5"
-            onClick={handleDelete}
+            onClick={() => setIsDeleteModalOpen(true)}
           >
             <Trash2 className="h-3.5 w-3.5" /> DELETE
           </Button>
+
         </div>
       </div>
 
@@ -228,6 +250,14 @@ export function ItemDetail() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <DeleteConfirmDialog
+        open={isDeleteModalOpen}
+        onOpenChange={setIsDeleteModalOpen}
+        itemTitle={item.title}
+        onConfirm={handleDelete}
+        isLoading={isDeleting}
+      />
     </div>
   );
 }

@@ -11,31 +11,38 @@ export interface UploadedFile {
   file: File;
   progress: number;
   status: "uploading" | "completed" | "error";
+  preview?: string; // Add this for existing remote images
 }
 
-const FilePreview = ({ file }: { file: File }) => {
-  const [preview, setPreview] = React.useState<string | null>(null);
+const FilePreview = ({ file, previewUrl }: { file: File, previewUrl?: string }) => {
+  const [localPreview, setLocalPreview] = React.useState<string | null>(previewUrl || null);
 
   React.useEffect(() => {
-    if (file.type.startsWith('image/')) {
+    if (previewUrl) {
+      setLocalPreview(previewUrl);
+      return;
+    }
+    
+    if (file && file.size > 0 && file.type.startsWith('image/')) {
       const url = URL.createObjectURL(file);
-      setPreview(url);
+      setLocalPreview(url);
       return () => URL.revokeObjectURL(url);
     }
-  }, [file]);
+  }, [file, previewUrl]);
 
   return (
     <div className="flex h-10 w-10 flex-shrink-0 overflow-hidden items-center justify-center rounded-md bg-muted">
-      {preview ? (
-        <img src={preview} alt="preview" className="h-full w-full object-cover" />
+      {localPreview ? (
+        <img src={localPreview} alt="preview" className="h-full w-full object-cover" />
       ) : (
         <div className="text-[10px] font-bold text-muted-foreground uppercase">
-          {file.type.split("/")[1]?.toUpperCase().substring(0, 3) || "FILE"}
+          {file.type ? file.type.split("/")[1]?.toUpperCase().substring(0, 3) : "IMG"}
         </div>
       )}
     </div>
   );
 };
+
 
 interface FileUploadCardProps extends React.HTMLAttributes<HTMLDivElement> {
   files: UploadedFile[];
@@ -168,7 +175,7 @@ export const FileUploadCard = React.forwardRef<HTMLDivElement, FileUploadCardPro
                     className="flex items-center justify-between"
                   >
                     <div className="flex items-center gap-3">
-                      <FilePreview file={file.file} />
+                      <FilePreview file={file.file} previewUrl={file.preview} />
                       <div className="flex-1">
                         <p className="max-w-[150px] truncate text-sm font-medium text-foreground sm:max-w-xs">
                           {file.file.name}
