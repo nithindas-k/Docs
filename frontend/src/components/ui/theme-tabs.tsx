@@ -1,4 +1,3 @@
-import { cn } from "../../lib/utils";
 import { Theme } from "./theme"
 
 export const Component = () => { 
