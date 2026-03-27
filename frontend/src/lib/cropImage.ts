@@ -23,9 +23,7 @@ export async function getCroppedImg(imageSrc: string, pixelCrop: Area): Promise<
   );
 
   return new Promise((resolve) => {
-    canvas.toBlob((blob) => {
-      const url = URL.createObjectURL(blob!);
-      resolve(url);
-    }, "image/png");
+    const base64Image = canvas.toDataURL("image/png");
+    resolve(base64Image);
   });
 }

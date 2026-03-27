@@ -1,10 +1,12 @@
 export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-export const DEMO_TOKEN = 'mock-jwt-token';
+export const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || 'dummy-google-client-id';
 
 export const ROUTES = {
   LOGIN: '/login',
   HOME: '/',
   CATEGORY: '/category/:id',
+  PERSONS: '/persons',
+  PERSON_DETAIL: '/persons/:id',
 };
 
 export const API_ROUTES = {
@@ -18,6 +20,10 @@ export const API_ROUTES = {
   ITEM: {
     BASE: '/items',
     BY_CATEGORY: (id: string) => `/items/category/${id}`,
+  },
+  PERSON: {
+    BASE: '/persons',
+    ID: (id: string) => `/persons/${id}`,
   }
 };
 

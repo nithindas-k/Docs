@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { api } from '../services/api';
-import { API_ROUTES, DEFAULT_CATEGORIES, DEMO_TOKEN } from '../constants';
+import { API_ROUTES, DEFAULT_CATEGORIES } from '../constants';
 
 export interface Category {
   _id: string;
@@ -21,10 +21,6 @@ const initialState: CategoryState = {
 };
 
 export const fetchCategories = createAsyncThunk('categories/fetchAll', async () => {
-  if (localStorage.getItem('lockr_token') === DEMO_TOKEN) {
-    return [...DEFAULT_CATEGORIES];
-  }
-
   const response = await api.get<{ data: Category[] }>(API_ROUTES.CATEGORY.BASE);
   return response.data;
 });

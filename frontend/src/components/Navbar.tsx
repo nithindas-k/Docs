@@ -1,7 +1,8 @@
-import { Menu, Search, User, LogOut } from 'lucide-react';
+import { Menu, Search, LogOut } from 'lucide-react';
 import { Button } from './ui/button';
 import { Theme } from './ui/theme';
 import { Input } from './ui/input';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 
 interface NavbarProps {
   setIsOpen: (open: boolean) => void;
@@ -39,17 +40,12 @@ export function Navbar({ setIsOpen, user, onLogout }: NavbarProps) {
         </div>
         
         <div className="flex items-center gap-3 pl-4 border-l border-border/50">
-          <div className="hidden text-right md:block">
-            <div className="text-sm font-semibold tracking-tight leading-none mb-1">{user?.name || 'User'}</div>
-            <div className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest">{user?.email || 'authenticated'}</div>
-          </div>
-          <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center overflow-hidden border border-primary/20 shadow-sm transition-transform hover:scale-105 cursor-pointer">
-            {user?.picture ? (
-              <img src={user.picture} alt={user.name} className="h-full w-full object-cover" />
-            ) : (
-              <User className="h-5 w-5 text-primary" />
-            )}
-          </div>
+          <Avatar className="h-10 w-10 border border-primary/20 shadow-sm transition-all hover:scale-105 cursor-pointer">
+            <AvatarImage src={user?.picture} alt={user?.name} />
+            <AvatarFallback className="bg-primary/10 text-primary font-bold">
+              {user?.name?.charAt(0).toUpperCase() || 'U'}
+            </AvatarFallback>
+          </Avatar>
           <Button 
             variant="ghost" 
             size="icon" 

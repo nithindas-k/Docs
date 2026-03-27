@@ -1,6 +1,7 @@
 export const ROUTES = {
   AUTH: {
     GOOGLE: "/auth/google",
+    GOOGLE_CALLBACK: "/auth/google/callback",
     PROFILE: "/auth/profile"
   },
   CATEGORY: {
@@ -11,12 +12,17 @@ export const ROUTES = {
     BASE: "/items",
     ID: "/items/:id",
     CATEGORY: "/items/category/:categoryId"
+  },
+  PERSON: {
+    BASE: "/persons",
+    ID: "/persons/:id"
   }
 };
 
 export const MESSAGES = {
   SUCCESS: "Operation successful",
   CREATED: "Resource created successfully",
+  DELETED: "Resource deleted successfully",
   UNAUTHORIZED: "Unauthorized access",
   FORBIDDEN: "Forbidden access",
   NOT_FOUND: "Resource not found",

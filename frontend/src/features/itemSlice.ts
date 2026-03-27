@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { api } from '../services/api';
-import { API_ROUTES, DEMO_TOKEN } from '../constants';
+import { API_ROUTES } from '../constants';
 
 export interface Item {
   title: string;
@@ -28,10 +28,6 @@ const initialState: ItemState = {
 export const fetchItemsByCategory = createAsyncThunk(
   'items/fetchByCategory',
   async (categoryId: string) => {
-    if (localStorage.getItem('lockr_token') === DEMO_TOKEN) {
-      return { categoryId, data: [] };
-    }
-
     const response = await api.get<{ data: Item[] }>(API_ROUTES.ITEM.BY_CATEGORY(categoryId));
     return { categoryId, data: response.data };
   }

@@ -6,6 +6,8 @@ import { Home } from './pages/Home';
 import { Login } from './pages/Login';
 import { CategoryDetail } from './pages/CategoryDetail';
 import { FileUploadPage } from './pages/FileUploadPage';
+import { Persons } from './pages/Persons';
+import { PersonDetail } from './pages/PersonDetail';
 
 import { ThemeProvider } from 'next-themes';
 
@@ -13,16 +15,18 @@ function App() {
   return (
     <Provider store={store}>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <BrowserRouter>
-          <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route element={<Layout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/category/:id" element={<CategoryDetail />} />
-            <Route path="/upload" element={<FileUploadPage />} />
-          </Route>
-          </Routes>
-        </BrowserRouter>
+          <BrowserRouter>
+            <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route element={<Layout />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/category/:id" element={<CategoryDetail />} />
+              <Route path="/upload" element={<FileUploadPage />} />
+              <Route path="/persons" element={<Persons />} />
+              <Route path="/persons/:id" element={<PersonDetail />} />
+            </Route>
+            </Routes>
+          </BrowserRouter>
       </ThemeProvider>
     </Provider>
   );

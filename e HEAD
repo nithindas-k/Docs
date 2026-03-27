@@ -1,0 +1,432 @@
+[33mcommit 4462ab91b4e6624ce0e4dd2edc2345df0ff61552[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: Nithin Das <nithindaskavungal@gmail.com>
+Date:   Fri Mar 27 15:48:35 2026 +0530
+
+    Feat(crop): implimented
+
+[1mdiff --git a/frontend/package-lock.json b/frontend/package-lock.json[m
+[1mindex cf07a56..fc251e4 100644[m
+[1m--- a/frontend/package-lock.json[m
+[1m+++ b/frontend/package-lock.json[m
+[36m@@ -12,12 +12,15 @@[m
+         "@radix-ui/react-checkbox": "^1.3.3",[m
+         "@radix-ui/react-dialog": "^1.1.15",[m
+         "@radix-ui/react-dropdown-menu": "^2.1.16",[m
+[32m+[m[32m        "@radix-ui/react-icons": "^1.3.2",[m
+         "@radix-ui/react-label": "^2.1.8",[m
+         "@radix-ui/react-progress": "^1.1.8",[m
+         "@radix-ui/react-radio-group": "^1.3.8",[m
+         "@radix-ui/react-select": "^2.2.6",[m
+[32m+[m[32m        "@radix-ui/react-slider": "^1.3.6",[m
+         "@radix-ui/react-slot": "^1.2.4",[m
+         "@radix-ui/react-tabs": "^1.1.13",[m
+[32m+[m[32m        "@radix-ui/react-tooltip": "^1.2.8",[m
+         "@reduxjs/toolkit": "^2.11.2",[m
+         "autoprefixer": "^10.4.27",[m
+         "class-variance-authority": "^0.7.1",[m
+[36m@@ -29,6 +32,7 @@[m
+         "postcss": "^8.5.8",[m
+         "react": "^18.3.1",[m
+         "react-dom": "^18.3.1",[m
+[32m+[m[32m        "react-easy-crop": "^5.5.7",[m
+         "react-redux": "^9.2.0",[m
+         "react-router-dom": "6.22.3",[m
+         "tailwind-merge": "^2.6.0",[m
+[36m@@ -1081,6 +1085,15 @@[m
+         }[m
+       }[m
+     },[m
+[32m+[m[32m    "node_modules/@radix-ui/react-icons": {[m
+[32m+[m[32m      "version": "1.3.2",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/@radix-ui/react-icons/-/react-icons-1.3.2.tgz",[m
+[32m+[m[32m      "integrity": "sha512-fyQIhGDhzfc9pK2kH6Pl9c4BDJGfMkPqkyIgYDthyNYoNg3wVhoJMMh19WS4Up/1KMPFVpNsT2q3WmXn2N1m6g==",[m
+[32m+[m[32m      "license": "MIT",[m
+[32m+[m[32m      "peerDependencies": {[m
+[32m+[m[32m        "react": "^16.x || ^17.x || ^18.x || ^19.0.0 || ^19.0.0-rc"[m
+[32m+[m[32m      }[m
+[32m+[m[32m    },[m
+     "node_modules/@radix-ui/react-id": {[m
+       "version": "1.1.1",[m
+       "resolved": "https://registry.npmjs.org/@radix-ui/react-id/-/react-id-1.1.1.tgz",[m
+[36m@@ -1510,6 +1523,39 @@[m
+         }[m
+       }[m
+     },[m
+[32m+[m[32m    "node_modules/@radix-ui/react-slider": {[m
+[32m+[m[32m      "version": "1.3.6",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/@radix-ui/react-slider/-/react-slider-1.3.6.tgz",[m
+[32m+[m[32m      "integrity": "sha512-JPYb1GuM1bxfjMRlNLE+BcmBC8onfCi60Blk7OBqi2MLTFdS+8401U4uFjnwkOr49BLmXxLC6JHkvAsx5OJvHw==",[m
+[32m+[m[32m      "license": "MIT",[m
+[32m+[m[32m      "dependencies": {[m
+[32m+[m[32m        "@radix-ui/number": "1.1.1",[m
+[32m+[m[32m        "@radix-ui/primitive": "1.1.3",[m
+[32m+[m[32m        "@radix-ui/react-collection": "1.1.7",[m
+[32m+[m[32m        "@radix-ui/react-compose-refs": "1.1.2",[m
+[32m+[m[32m        "@radix-ui/react-context": "1.1.2",[m
+[32m+[m[32m        "@radix-ui/react-direction": "1.1.1",[m
+[32m+[m[32m        "@radix-ui/react-primitive": "2.1.3",[m
+[32m+[m[32m        "@radix-ui/react-use-controllable-state": "1.2.2",[m
+[32m+[m[32m        "@radix-ui/react-use-layout-effect": "1.1.1",[m
+[32m+[m[32m        "@radix-ui/react-use-previous": "1.1.1",[m
+[32m+[m[32m        "@radix-ui/react-use-size": "1.1.1"[m
+[32m+[m[32m      },[m
+[32m+[m[32m      "peerDependencies": {[m
+[32m+[m[32m        "@types/react": "*",[m
+[32m+[m[32m        "@types/react-dom": "*",[m
+[32m+[m[32m        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",[m
+[32m+[m[32m        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"[m
+[32m+[m[32m      },[m
+[32m+[m[32m      "peerDependenciesMeta": {[m
+[32m+[m[32m        "@types/react": {[m
+[32m+[m[32m          "optional": true[m
+[32m+[m[32m        },[m
+[32m+[m[32m        "@types/react-dom": {[m
+[32m+[m[32m          "optional": true[m
+[32m+[m[32m        }[m
+[32m+[m[32m      }[m
+[32m+[m[32m    },[m
+     "node_modules/@radix-ui/react-slot": {[m
+       "version": "1.2.4",[m
+       "resolved": "https://registry.npmjs.org/@radix-ui/react-slot/-/react-slot-1.2.4.tgz",[m
+[36m@@ -1558,6 +1604,58 @@[m
+         }[m
+       }[m
+     },[m
+[32m+[m[32m    "node_modules/@radix-ui/react-tooltip": {[m
+[32m+[m[32m      "version": "1.2.8",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/@radix-ui/react-tooltip/-/react-tooltip-1.2.8.tgz",[m
+[32m+[m[32m      "integrity": "sha512-tY7sVt1yL9ozIxvmbtN5qtmH2krXcBCfjEiCgKGLqunJHvgvZG2Pcl2oQ3kbcZARb1BGEHdkLzcYGO8ynVlieg==",[m
+[32m+[m[32m      "license": "MIT",[m
+[32m+[m[32m      "dependencies": {[m
+[32m+[m[32m        "@radix-ui/primitive": "1.1.3",[m
+[32m+[m[32m        "@radix-ui/react-compose-refs": "1.1.2",[m
+[32m+[m[32m        "@radix-ui/react-context": "1.1.2",[m
+[32m+[m[32m        "@radix-ui/react-dismissable-layer": "1.1.11",[m
+[32m+[m[32m        "@radix-ui/react-id": "1.1.1",[m
+[32m+[m[32m        "@radix-ui/react-popper": "1.2.8",[m
+[32m+[m[32m        "@radix-ui/react-portal": "1.1.9",[m
+[32m+[m[32m        "@radix-ui/react-presence": "1.1.5",[m
+[32m+[m[32m        "@radix-ui/react-primitive": "2.1.3",[m
+[32m+[m[32m        "@radix-ui/react-slot": "1.2.3",[m
+[32m+[m[32m        "@radix-ui/react-use-controllable-state": "1.2.2",[m
+[32m+[m[32m        "@radix-ui/react-visually-hidden": "1.2.3"[m
+[32m+[m[32m      },[m
+[32m+[m[32m      "peerDependencies": {[m
+[32m+[m[32m        "@types/react": "*",[m
+[32m+[m[32m        "@types/react-dom": "*",[m
+[32m+[m[32m        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",[m
+[32m+[m[32m        "react-dom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"[m
+[32m+[m[32m      },[m
+[32m+[m[32m      "peerDependenciesMeta": {[m
+[32m+[m[32m        "@types/react": {[m
+[32m+[m[32m          "optional": true[m
+[32m+[m[32m        },[m
+[32m+[m[32m        "@types/react-dom": {[m
+[32m+[m[32m          "optional": true[m
+[32m+[m[32m        }[m
+[32m+[m[32m      }[m
+[32m+[m[32m    },[m
+[32m+[m[32m    "node_modules/@radix-ui/react-tooltip/node_modules/@radix-ui/react-slot": {[m
+[32m+[m[32m      "version": "1.2.3",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/@radix-ui/react-slot/-/react-slot-1.2.3.tgz",[m
+[32m+[m[32m      "integrity": "sha512-aeNmHnBxbi2St0au6VBVC7JXFlhLlOnvIIlePNniyUNAClzmtAUEY8/pBiK3iHjufOlwA+c20/8jngo7xcrg8A==",[m
+[32m+[m[32m      "license": "MIT",[m
+[32m+[m[32m      "dependencies": {[m
+[32m+[m[32m        "@radix-ui/react-compose-refs": "1.1.2"[m
+[32m+[m[32m      },[m
+[32m+[m[32m      "peerDependencies": {[m
+[32m+[m[32m        "@types/react": "*",[m
+[32m+[m[32m        "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc"[m
+[32m+[m[32m      },[m
+[32m+[m[32m      "peerDependenciesMeta": {[m
+[32m+[m[32m        "@types/react": {[m
+[32m+[m[32m          "optional": true[m
+[32m+[m[32m        }[m
+[32m+[m[32m      }[m
+[32m+[m[32m    },[m
+     "node_modules/@radix-ui/react-use-callback-ref": {[m
+       "version": "1.1.1",[m
+       "resolved": "https://registry.npmjs.org/@radix-ui/react-use-callback-ref/-/react-use-callback-ref-1.1.1.tgz",[m
+[36m@@ -4048,6 +4146,12 @@[m
+         "node": ">=0.10.0"[m
+       }[m
+     },[m
+[32m+[m[32m    "node_modules/normalize-wheel": {[m
+[32m+[m[32m      "version": "1.0.1",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/normalize-wheel/-/normalize-wheel-1.0.1.tgz",[m
+[32m+[m[32m      "integrity": "sha512-1OnlAPZ3zgrk8B91HyRj+eVv+kS5u+Z0SCsak6Xil/kmgEia50ga7zfkumayonZrImffAxPU/5WcyGhzetHNPA==",[m
+[32m+[m[32m      "license": "BSD-3-Clause"[m
+[32m+[m[32m    },[m
+     "node_modules/object-assign": {[m
+       "version": "4.1.1",[m
+       "resolved": "https://registry.npmjs.org/object-assign/-/object-assign-4.1.1.tgz",[m
+[36m@@ -4412,6 +4516,20 @@[m
+         "react": "^18.3.1"[m
+       }[m
+     },[m
+[32m+[m[32m    "node_modules/react-easy-crop": {[m
+[32m+[m[32m      "version": "5.5.7",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/react-easy-crop/-/react-easy-crop-5.5.7.tgz",[m
+[32m+[m[32m      "integrity": "sha512-kYo4NtMeXFQB7h1U+h5yhUkE46WQbQdq7if54uDlbMdZHdRgNehfvaFrXnFw5NR1PNoUOJIfTwLnWmEx/MaZnA==",[m
+[32m+[m[32m      "license": "MIT",[m
+[32m+[m[32m      "dependencies": {[m
+[32m+[m[32m        "normalize-wheel": "^1.0.1",[m
+[32m+[m[32m        "tslib": "^2.0.1"[m
+[32m+[m[32m      },[m
+[32m+[m[32m      "peerDependencies": {[m
+[32m+[m[32m        "react": ">=16.4.0",[m
+[32m+[m[32m        "react-dom": ">=16.4.0"[m
+[32m+[m[32m      }[m
+[32m+[m[32m    },[m
+     "node_modules/react-redux": {[m
+       "version": "9.2.0",[m
+       "resolved": "https://registry.npmjs.org/react-redux/-/react-redux-9.2.0.tgz",[m
+[1mdiff --git a/frontend/package.json b/frontend/package.json[m
+[1mindex 13f04a9..688398d 100644[m
+[1m--- a/frontend/package.json[m
+[1m+++ b/frontend/package.json[m
+[36m@@ -14,12 +14,15 @@[m
+     "@radix-ui/react-checkbox": "^1.3.3",[m
+     "@radix-ui/react-dialog": "^1.1.15",[m
+     "@radix-ui/react-dropdown-menu": "^2.1.16",[m
+[32m+[m[32m    "@radix-ui/react-icons": "^1.3.2",[m
+     "@radix-ui/react-label": "^2.1.8",[m
+     "@radix-ui/react-progress": "^1.1.8",[m
+     "@radix-ui/react-radio-group": "^1.3.8",[m
+     "@radix-ui/react-select": "^2.2.6",[m
+[32m+[m[32m    "@radix-ui/react-slider": "^1.3.6",[m
+     "@radix-ui/react-slot": "^1.2.4",[m
+     "@radix-ui/react-tabs": "^1.1.13",[m
+[32m+[m[32m    "@radix-ui/react-tooltip": "^1.2.8",[m
+     "@reduxjs/toolkit": "^2.11.2",[m
+     "autoprefixer": "^10.4.27",[m
+     "class-variance-authority": "^0.7.1",[m
+[36m@@ -31,6 +34,7 @@[m
+     "postcss": "^8.5.8",[m
+     "react": "^18.3.1",[m
+     "react-dom": "^18.3.1",[m
+[32m+[m[32m    "react-easy-crop": "^5.5.7",[m
+     "react-redux": "^9.2.0",[m
+     "react-router-dom": "6.22.3",[m
+     "tailwind-merge": "^2.6.0",[m
+[1mdiff --git a/frontend/src/components/AddItemForm.tsx b/frontend/src/components/AddItemForm.tsx[m
+[1mindex 515d5b4..e5aad46 100644[m
+[1m--- a/frontend/src/components/AddItemForm.tsx[m
+[1m+++ b/frontend/src/components/AddItemForm.tsx[m
+[36m@@ -1,8 +1,10 @@[m
+[31m-﻿import React, { useState } from 'react';[m
+[32m+[m[32mimport React, { useState } from 'react';[m
+ import { Button } from './ui/button';[m
+ import { Input } from './ui/input';[m
+ import { Plus, Trash2 } from 'lucide-react';[m
+ import { FileUploadCard, UploadedFile } from './ui/file-upload-card';[m
+[32m+[m[32mimport { ImageCropper } from './ui/image-cropper';[m
+[32m+[m[32mimport { Dialog, DialogContent, DialogTitle, DialogHeader } from './ui/dialog';[m
+ [m
+ interface Field {[m
+   key: string;[m
+[36m@@ -20,15 +22,51 @@[m [mexport function AddItemForm({ categoryName, onSubmit, isLoading }: AddItemFormPr[m
+   const [title, setTitle] = useState('');[m
+   const [fields, setFields] = useState<Field[]>([{ key: '', value: '', isEncrypted: false }]);[m
+   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);[m
+[32m+[m[32m  const [imageToCrop, setImageToCrop] = useState<{ file: File; src: string } | null>(null);[m
+ [m
+   const handleFilesChange = (files: File[]) => {[m
+[31m-    const normalized = files.map((file) => ({[m
+[31m-      id: `${file.name}-${Date.now()}`,[m
+[31m-      file,[m
+[31m-      progress: 0,[m
+[31m-      status: 'uploading' as const,[m
+[31m-    }));[m
+[31m-    setUploadedFiles((prev) => [...prev, ...normalized]);[m
+[32m+[m[32m    const file = files[0];[m
+[32m+[m[32m    if (file && file.type.startsWith('image/')) {[m
+[32m+[m[32m      const reader = new FileReader();[m
+[32m+[m[32m      reader.onload = () => {[m
+[32m+[m[32m        setImageToCrop({ file, src: reader.result as string });[m
+[32m+[m[32m      };[m
+[32m+[m[32m      reader.readAsDataURL(file);[m
+[32m+[m[32m    } else if (file) {[m
+[32m+[m[32m      const normalized = [{[m
+[32m+[m[32m        id: `${file.name}-${Date.now()}`,[m
+[32m+[m[32m        file,[m
+[32m+[m[32m        progress: 100,[m
+[32m+[m[32m        status: 'completed' as const,[m
+[32m+[m[32m      }];[m
+[32m+[m[32m      setUploadedFiles(normalized);[m
+[32m+[m[32m    }[m
+[32m+[m[32m  };[m
+[32m+[m
+[32m+[m[32m  const handleCropDone = async (croppedImageUrl: string) => {[m
+[32m+[m[32m    if (!imageToCrop) return;[m
+[32m+[m
+[32m+[m[32m    try {[m
+[32m+[m[32m      const response = await fetch(croppedImageUrl);[m
+[32m+[m[32m      const blob = await response.blob();[m
+[32m+[m[32m      const croppedFile = new File([blob], imageToCrop.file.name, { type: 'image/png' });[m
+[32m+[m
+[32m+[m[32m      const normalized = {[m
+[32m+[m[32m        id: `${croppedFile.name}-${Date.now()}`,[m
+[32m+[m[32m        file: croppedFile,[m
+[32m+[m[32m        progress: 100,[m
+[32m+[m[32m        status: 'completed' as const,[m
+[32m+[m[32m      };[m
+[32m+[m
+[32m+[m[32m      setUploadedFiles([normalized]);[m
+[32m+[m[32m      setImageToCrop(null);[m
+[32m+[m[32m    } catch (e) {[m
+[32m+[m[32m      console.error('Cropping failed:', e);[m
+[32m+[m[32m    }[m
+[32m+[m[32m  };[m
+[32m+[m
+[32m+[m[32m  const handleCropCancel = () => {[m
+[32m+[m[32m    setImageToCrop(null);[m
+   };[m
+ [m
+   const handleFileRemove = (id: string) => {[m
+[36m@@ -78,6 +116,21 @@[m [mexport function AddItemForm({ categoryName, onSubmit, isLoading }: AddItemFormPr[m
+ [m
+   return ([m
+     <form onSubmit={handleSubmit} className="space-y-6">[m
+[32m+[m[32m      <Dialog open={!!imageToCrop} onOpenChange={(open) => !open && setImageToCrop(null)}>[m
+[32m+[m[32m        <DialogContent className="max-w-lg border bg-background p-6 rounded-2xl shadow-xl overflow-hidden">[m
+[32m+[m[32m          <DialogHeader className="sr-only">[m
+[32m+[m[32m            <DialogTitle>Crop Image</DialogTitle>[m
+[32m+[m[32m          </DialogHeader>[m
+[32m+[m[32m          {imageToCrop && ([m
+[32m+[m[32m            <ImageCropper[m[41m [m
+[32m+[m[32m              imageSrc={imageToCrop.src}[m[41m [m
+[32m+[m[32m              onCropComplete={handleCropDone}[m[41m [m
+[32m+[m[32m              onCancel={handleCropCancel}[m[41m [m
+[32m+[m[32m            />[m
+[32m+[m[32m          )}[m
+[32m+[m[32m        </DialogContent>[m
+[32m+[m[32m      </Dialog>[m
+[32m+[m
+       <FileUploadCard[m
+         files={uploadedFiles}[m
+         onFilesChange={handleFilesChange}[m
+[1mdiff --git a/frontend/src/components/EditItemForm.tsx b/frontend/src/components/EditItemForm.tsx[m
+[1mindex 10d13f0..8e32474 100644[m
+[1m--- a/frontend/src/components/EditItemForm.tsx[m
+[1m+++ b/frontend/src/components/EditItemForm.tsx[m
+[36m@@ -1,8 +1,10 @@[m
+[31m-﻿import React, { useState, useEffect } from 'react';[m
+[32m+[m[32mimport React, { useState, useEffect } from 'react';[m
+ import { Button } from './ui/button';[m
+ import { Input } from './ui/input';[m
+ import { Plus, Trash2 } from 'lucide-react';[m
+ import { FileUploadCard, UploadedFile } from './ui/file-upload-card';[m
+[32m+[m[32mimport { ImageCropper } from './ui/image-cropper';[m
+[32m+[m[32mimport { Dialog, DialogContent, DialogTitle, DialogHeader } from './ui/dialog';[m
+ [m
+ interface Field {[m
+   key: string;[m
+[36m@@ -45,6 +47,8 @@[m [mexport function EditItemForm({[m
+       : [][m
+   );[m
+ [m
+[32m+[m[32m  const [imageToCrop, setImageToCrop] = useState<{ file: File; src: string } | null>(null);[m
+[32m+[m
+   useEffect(() => {[m
+     setTitle(itemTitle);[m
+     setFields(itemFields.length > 0 ? itemFields : [{ key: '', value: '', isEncrypted: false }]);[m
+[36m@@ -63,13 +67,48 @@[m [mexport function EditItemForm({[m
+   }, [itemTitle, itemFields, itemPhotoUrl]);[m
+ [m
+   const handleFilesChange = (files: File[]) => {[m
+[31m-    const normalized = files.map((file) => ({[m
+[31m-      id: `${file.name}-${Date.now()}`,[m
+[31m-      file,[m
+[31m-      progress: 0,[m
+[31m-      status: 'uploading' as const,[m
+[31m-    }));[m
+[31m-    setUploadedFiles(normalized);[m
+[32m+[m[32m    const file = files[0];[m
+[32m+[m[32m    if (file && file.type.startsWith('image/')) {[m
+[32m+[m[32m      const reader = new FileReader();[m
+[32m+[m[32m      reader.onload = () => {[m
+[32m+[m[32m        setImageToCrop({ file, src: reader.result as string });[m
+[32m+[m[32m      };[m
+[32m+[m[32m      reader.readAsDataURL(file);[m
+[32m+[m[32m    } else if (file) {[m
+[32m+[m[32m      const normalized = [{[m
+[32m+[m[32m        id: `${file.name}-${Date.now()}`,[m
+[32m+[m[32m        file,[m
+[32m+[m[32m        progress: 100,[m
+[32m+[m[32m        status: 'completed' as const,[m
+[32m+[m[32m      }];[m
+[32m+[m[32m      setUploadedFiles(normalized);[m
+[32m+[m[32m    }[m
+[32m+[m[32m  };[m
+[32m+[m
+[32m+[m[32m  const handleCropDone = async (croppedImageUrl: string) => {[m
+[32m+[m[32m    if (!imageToCrop) return;[m
+[32m+[m
+[32m+[m[32m    try {[m
+[32m+[m[32m      const response = await fetch(croppedImageUrl);[m
+[32m+[m[32m      const blob = await response.blob();[m
+[32m+[m[32m      const croppedFile = new File([blob], imageToCrop.file.name, { type: 'image/png' });[m
+[32m+[m
+[32m+[m[32m      const normalized = {[m
+[32m+[m[32m        id: `${croppedFile.name}-${Date.now()}`,[m
+[32m+[m[32m        file: croppedFile,[m
+[32m+[m[32m        progress: 100,[m
+[32m+[m[32m        status: 'completed' as const,[m
+[32m+[m[32m      };[m
+[32m+[m
+[32m+[m[32m      setUploadedFiles([normalized]);[m
+[32m+[m[32m      setImageToCrop(null);[m
+[32m+[m[32m    } catch (e) {[m
+[32m+[m[32m      console.error('Cropping failed:', e);[m
+[32m+[m[32m    }[m
+[32m+[m[32m  };[m
+[32m+[m
+[32m+[m[32m  const handleCropCancel = () => {[m
+[32m+[m[32m    setImageToCrop(null);[m
+   };[m
+ [m
+   const handleFileRemove = (id: string) => {[m
+[36m@@ -115,6 +154,21 @@[m [mexport function EditItemForm({[m
+ [m
+   return ([m
+     <form onSubmit={handleSubmit} className="space-y-6">[m
+[32m+[m[32m      <Dialog open={!!imageToCrop} onOpenChange={(open) => !open && setImageToCrop(null)}>[m
+[32m+[m[32m        <DialogContent className="max-w-lg border bg-background p-6 rounded-2xl shadow-xl overflow-hidden">[m
+[32m+[m[32m          <DialogHeader className="sr-only">[m
+[32m+[m[32m            <DialogTitle>Crop Image</DialogTitle>[m
+[32m+[m[32m          </DialogHeader>[m
+[32m+[m[32m          {imageToCrop && ([m
+[32m+[m[32m            <ImageCropper[m[41m [m
+[32m+[m[32m              imageSrc={imageToCrop.src}[m[41m [m
+[32m+[m[32m              onCropComplete={handleCropDone}[m[41m [m
+[32m+[m[32m              onCancel={handleCropCancel}[m[41m [m
+[32m+[m[32m            />[m
+[32m+[m[32m          )}[m
+[32m+[m[32m        </DialogContent>[m
+[32m+[m[32m      </Dialog>[m
+[32m+[m
+       <FileUploadCard[m
+         files={uploadedFiles}[m
+         onFilesChange={handleFilesChange}[m
+[1mdiff --git a/frontend/src/components/ui/image-cropper.tsx b/frontend/src/components/ui/image-cropper.tsx[m
+[1mnew file mode 100644[m
+[1mindex 0000000..8e4e07b[m
+[1m--- /dev/null[m
+[1m+++ b/frontend/src/components/ui/image-cropper.tsx[m
+[36m@@ -0,0 +1,107 @@[m
+[32m+[m[32m"use client";[m
+[32m+[m
+[32m+[m[32mimport * as React from "react";[m
+[32m+[m[32mimport Cropper, { Area } from "react-easy-crop";[m
+[32m+[m[32mimport { Button } from "./button";[m
+[32m+[m[32mimport { Slider } from "./slider";[m
+[32m+[m[32mimport { getCroppedImg } from "../../lib/cropImage";[m
+[32m+[m
+[32m+[m[32minterface ImageCropperProps {[m
+[32m+[m[32m  imageSrc: string | null;[m
+[32m+[m[32m  onCropComplete?: (croppedImage: string) => void;[m
+[32m+[m[32m  onCancel?: () => void;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mexport funct

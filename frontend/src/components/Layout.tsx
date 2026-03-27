@@ -1,21 +1,27 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Outlet, Navigate } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { Navbar } from './Navbar';
 import { useAppDispatch, useAppSelector } from '../features/hooks';
 import { fetchCategories } from '../features/categorySlice';
-import { logout } from '../features/authSlice';
+import { fetchPersons } from '../features/personSlice';
+import { logout, fetchProfile } from '../features/authSlice';
 import Lenis from 'lenis';
+import { Toaster } from 'sonner';
 
 export function Layout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const scrollRef = useRef<HTMLElement>(null);
   const dispatch = useAppDispatch();
   const { user, token } = useAppSelector((state) => state.auth);
   const { categories } = useAppSelector((state) => state.categories);
 
   useEffect(() => {
-    // Lenis Smooth Scrolling Initialization
+    if (!scrollRef.current) return;
+
     const lenis = new Lenis({
+      wrapper: scrollRef.current,
+      content: scrollRef.current,
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: 'vertical',
@@ -32,11 +38,18 @@ export function Layout() {
     requestAnimationFrame(raf);
 
     return () => lenis.destroy();
-  }, []);
+  }, [scrollRef.current]);
+
+  useEffect(() => {
+    if (token && !user) {
+      dispatch(fetchProfile());
+    }
+  }, [token, user, dispatch]);
 
   useEffect(() => {
     if (token) {
       dispatch(fetchCategories());
+      dispatch(fetchPersons());
     }
   }, [token, dispatch]);
 
@@ -49,12 +62,16 @@ export function Layout() {
       <div className="flex flex-1 flex-col overflow-hidden lg:pl-64">
         <Navbar setIsOpen={setIsSidebarOpen} user={user} onLogout={() => dispatch(logout())} />
         
-        <main className="flex-1 overflow-y-auto bg-accent/10 p-4 md:p-6 lg:p-8">
+        <main 
+          ref={scrollRef}
+          className="flex-1 overflow-y-auto bg-accent/10 p-4 md:p-6 lg:p-8 outline-none"
+        >
           <div className="mx-auto max-w-6xl">
             <Outlet />
           </div>
         </main>
       </div>
+      <Toaster position="top-right" richColors />
     </div>
   );
 }

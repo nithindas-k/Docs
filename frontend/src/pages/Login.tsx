@@ -1,21 +1,36 @@
+import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../features/hooks';
 import { loginSuccess } from '../features/authSlice';
 import { Button } from '../components/ui/button';
-import { Navigate } from 'react-router-dom';
-import { DEMO_TOKEN } from '../constants';
+import { Navigate, useSearchParams } from 'react-router-dom';
+import { API_URL } from '../constants';
+import { toast } from 'sonner';
 
 export function Login() {
   const dispatch = useAppDispatch();
   const token = useAppSelector((state) => state.auth.token);
 
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    const tokenParam = searchParams.get('token');
+    const userParam = searchParams.get('user');
+
+    if (tokenParam && userParam) {
+      try {
+        const user = JSON.parse(decodeURIComponent(userParam));
+        dispatch(loginSuccess({ user, token: tokenParam }));
+        toast.success(`Welcome back, ${user.name}!`);
+      } catch (e) {
+        toast.error("Authentication failed");
+      }
+    }
+  }, [searchParams, dispatch]);
+
   if (token) return <Navigate to="/" />;
 
-  const handleMockLogin = () => {
-    // In a real app, integrate Google Auth here
-    dispatch(loginSuccess({
-      user: { _id: 'demo-user-id', name: 'Demo User', email: 'demo@example.com' },
-      token: DEMO_TOKEN
-    }));
+  const handleGoogleLogin = () => {
+    window.location.href = `${API_URL}/auth/google`;
   };
 
   return (
@@ -33,8 +48,8 @@ export function Login() {
 
         <div className="space-y-4 pt-4">
           <Button 
-            className="h-12 w-full text-base font-medium shadow-sm transition-all hover:scale-[1.02]" 
-            onClick={handleMockLogin}
+            className="h-12 w-full text-base font-medium shadow-sm transition-all hover:scale-[1.02] bg-primary hover:bg-primary/90 text-primary-foreground" 
+            onClick={handleGoogleLogin}
           >
             Continue with Google
           </Button>

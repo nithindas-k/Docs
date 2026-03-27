@@ -9,6 +9,7 @@ interface IDynamicField {
 export interface IItem extends Document {
   user: Types.ObjectId;
   category: Types.ObjectId;
+  person?: Types.ObjectId; 
   title: string;
   photoUrl?: string;
   fields: IDynamicField[];
@@ -26,6 +27,7 @@ const ItemSchema: Schema = new Schema(
   {
     user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     category: { type: Schema.Types.ObjectId, ref: 'Category', required: true },
+    person: { type: Schema.Types.ObjectId, ref: 'Person' }, 
     title: { type: String, required: true },
     photoUrl: { type: String },
     fields: [DynamicFieldSchema],

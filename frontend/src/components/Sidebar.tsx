@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { NavLink } from 'react-router-dom';
-import { CreditCard, Car, FileText, Landmark, GraduationCap, UserCheck, Book, Plus, LayoutDashboard } from 'lucide-react';
+import { CreditCard, Car, FileText, Landmark, GraduationCap, UserCheck, Book, Plus, LayoutDashboard, Users } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { Button } from './ui/button';
 import { Theme } from './ui/theme';
@@ -58,6 +58,18 @@ export function Sidebar({ categories, isOpen, setIsOpen }: SidebarProps) {
             >
               <LayoutDashboard className="w-5 h-5" />
               Overview
+            </NavLink>
+            <NavLink
+              to="/persons"
+              className={({ isActive }) =>
+                cn(
+                  "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground",
+                  isActive ? "bg-primary/10 text-primary dark:bg-primary/20" : "text-muted-foreground"
+                )
+              }
+            >
+              <Users className="w-5 h-5" />
+              Family Profiles
             </NavLink>
           </nav>
 
