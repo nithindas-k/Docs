@@ -193,7 +193,7 @@ export function Persons() {
           ) : (
             <ul className="divide-y">
               {pendingRequests.map((req) => (
-                <li key={req._id} className="flex items-center justify-between p-4 gap-3">
+                <li key={req._id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-4">
                   <div className="flex items-center gap-3">
                     {req.fromUser.picture ? (
                       <img src={req.fromUser.picture} className="h-9 w-9 rounded-full object-cover border" alt={req.fromUser.name} />
@@ -202,15 +202,15 @@ export function Persons() {
                         {req.fromUser.name[0]}
                       </div>
                     )}
-                    <div>
-                      <p className="text-sm font-semibold">{req.fromUser.name}</p>
-                      <p className="text-xs text-muted-foreground">{req.fromUser.email}</p>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold truncate">{req.fromUser.name}</p>
+                      <p className="text-xs text-muted-foreground truncate">{req.fromUser.email}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 sm:ml-auto">
                     <Button
                       size="sm"
-                      className="h-8 rounded-xl gap-1.5 text-xs font-bold"
+                      className="h-8 rounded-xl gap-1.5 text-xs font-bold flex-1 sm:flex-none"
                       onClick={() => handleRespond(req._id, "accept")}
                     >
                       <Check className="h-3.5 w-3.5" /> Accept
@@ -218,7 +218,7 @@ export function Persons() {
                     <Button
                       size="sm"
                       variant="outline"
-                      className="h-8 rounded-xl gap-1.5 text-xs font-bold text-destructive border-destructive/20 hover:bg-destructive/10"
+                      className="h-8 rounded-xl gap-1.5 text-xs font-bold text-destructive border-destructive/20 hover:bg-destructive/10 flex-1 sm:flex-none"
                       onClick={() => handleRespond(req._id, "reject")}
                     >
                       <X className="h-3.5 w-3.5" /> Reject
@@ -247,10 +247,10 @@ export function Persons() {
           <p className="text-muted-foreground max-w-[360px] mb-10 text-sm font-medium leading-relaxed">
             Create your first family member profile or link a friend's vault to get started.
           </p>
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             <Button
               onClick={() => setIsAddDialogOpen(true)}
-              className="rounded-2xl h-12 px-8 gap-2 font-bold uppercase tracking-[0.15em] text-[10px] shadow-lg hover:translate-y-[-2px] transition-all duration-300"
+              className="rounded-2xl h-10 px-6 gap-2 font-bold uppercase tracking-[0.15em] text-[10px] shadow-lg hover:translate-y-[-2px] transition-all duration-300 w-full sm:w-auto"
             >
               <Plus className="h-4 w-4" />
               Add Member
@@ -258,7 +258,7 @@ export function Persons() {
             <Button
               variant="outline"
               onClick={() => setIsLinkModalOpen(true)}
-              className="rounded-2xl h-12 px-8 gap-2 font-bold uppercase tracking-[0.15em] text-[10px] hover:translate-y-[-2px] transition-all border-primary/30 text-primary"
+              className="rounded-2xl h-10 px-6 gap-2 font-bold uppercase tracking-[0.15em] text-[10px] hover:translate-y-[-2px] transition-all border-primary/30 text-primary w-full sm:w-auto"
             >
               <Link2 className="h-4 w-4" />
               Link Vault

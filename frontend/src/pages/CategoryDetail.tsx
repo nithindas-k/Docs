@@ -144,7 +144,7 @@ export function CategoryDetail() {
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="h-12 rounded-2xl px-8 gap-2 shadow-lg shadow-primary/20 font-bold text-xs uppercase tracking-[0.1em] transition-all hover:translate-y-[-2px] active:scale-[0.98]">
+            <Button className="h-10 rounded-2xl px-6 gap-2 shadow-lg shadow-primary/20 font-bold text-xs uppercase tracking-[0.1em] transition-all hover:translate-y-[-2px] active:scale-[0.98]">
               <Plus className="h-4 w-4" />
               Add {category?.name || 'Item'}
             </Button>

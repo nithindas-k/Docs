@@ -116,7 +116,7 @@ export function PersonDetail() {
 
             <Dialog open={isCategoryModalOpen} onOpenChange={setIsCategoryModalOpen}>
                 <DialogTrigger asChild>
-                  <Button className="rounded-2xl h-12 flex-1 sm:flex-none px-8 gap-2 shadow-lg shadow-primary/20 font-bold text-xs uppercase tracking-[0.1em] transition-all hover:translate-y-[-2px] active:scale-[0.98] bg-primary hover:bg-primary/90 text-primary-foreground">
+                  <Button className="rounded-2xl h-10 flex-1 sm:flex-none px-6 gap-2 shadow-lg shadow-primary/20 font-bold text-xs uppercase tracking-[0.1em] transition-all hover:translate-y-[-2px] active:scale-[0.98] bg-primary hover:bg-primary/90 text-primary-foreground">
                     <Plus className="w-4 h-4" />
                     NEW DOC
                   </Button>
