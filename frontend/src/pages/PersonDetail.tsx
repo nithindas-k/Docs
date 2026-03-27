@@ -120,12 +120,12 @@ export function PersonDetail() {
                     NEW DOC
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-2xl bg-background border shadow-xl rounded-3xl p-8">
+                <DialogContent className="w-[92vw] sm:max-w-2xl bg-background border shadow-xl rounded-3xl p-5 sm:p-8">
                   <DialogHeader>
                     <DialogTitle className="text-xl font-bold tracking-tight mb-1">Select Category</DialogTitle>
-                    <p className="text-muted-foreground text-xs font-semibold">Choose an archive for {personName}.</p>
+                    <p className="text-muted-foreground text-[11px] font-semibold opacity-80">Choose an archive for {personName}.</p>
                   </DialogHeader>
-                  <div className="relative mt-8 mb-4 group">
+                  <div className="relative mt-6 sm:mt-8 mb-4 group">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-foreground transition-colors" />
                     <input
                       type="text"
@@ -135,7 +135,7 @@ export function PersonDetail() {
                       onChange={(e) => setCategorySearchQuery(e.target.value)}
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-3 mt-4 max-h-[400px] overflow-y-auto pr-2 scrollbar-hide py-2">
+                  <div className="grid grid-cols-2 gap-3 mt-4 max-h-[45vh] sm:max-h-[400px] overflow-y-auto pr-2 scrollbar-hide py-2">
                     {categories.filter(cat => cat.name.toLowerCase().includes(categorySearchQuery.toLowerCase())).map((cat) => (
                       <button
                         key={cat._id}
@@ -144,12 +144,12 @@ export function PersonDetail() {
                           setIsCategoryModalOpen(false);
                           setIsAddModalOpen(true);
                         }}
-                        className="flex items-center gap-4 p-4 rounded-2xl border bg-card hover:bg-accent transition-all group text-left"
+                        className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-2xl border bg-card hover:bg-accent transition-all group text-left"
                       >
-                        <div className="h-9 w-9 rounded-lg border bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all duration-300">
+                        <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg border bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all duration-300">
                           <Files className="w-4 h-4" />
                         </div>
-                        <span className="font-bold text-sm tracking-tight text-foreground/80 lowercase first-letter:uppercase">{cat.name}</span>
+                        <span className="font-bold text-[11px] sm:text-sm tracking-tight text-foreground/80 lowercase first-letter:uppercase truncate">{cat.name}</span>
                       </button>
                     ))}
                   </div>
@@ -157,16 +157,16 @@ export function PersonDetail() {
             </Dialog>
 
             <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-                <DialogContent className="max-w-2xl bg-background border rounded-3xl p-8 max-h-[90vh] overflow-y-auto scrollbar-hide">
+                <DialogContent className="w-[92vw] sm:max-w-2xl bg-background border rounded-3xl p-5 sm:p-8 max-h-[85vh] overflow-y-auto scrollbar-hide">
                   <DialogHeader>
                     <DialogTitle className="text-xl font-bold tracking-tight mb-1">
                       New {selectedCategory?.name}
                     </DialogTitle>
-                    <p className="text-muted-foreground text-xs font-bold uppercase tracking-widest mt-1">
+                    <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest mt-1 opacity-60">
                       Adding Secure Data
                     </p>
                   </DialogHeader>
-                  <div className="mt-8">
+                  <div className="mt-6 sm:mt-8">
                     <AddItemForm 
                       categoryName={selectedCategory?.name || ""}
                       onSubmit={handleAddDocument}

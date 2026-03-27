@@ -101,7 +101,7 @@ export function Persons() {
 
       {/* Add Dialog */}
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-        <DialogContent className="p-0 bg-transparent border-none shadow-none w-full max-w-lg items-center flex justify-center focus:outline-none focus-visible:outline-none">
+        <DialogContent className="p-0 bg-transparent border-none shadow-none w-[92vw] sm:max-w-lg items-center flex justify-center focus:outline-none focus-visible:outline-none">
           <div className="w-full">
             <DialogHeader className="sr-only">
               <DialogTitle>Add Family Profile</DialogTitle>
@@ -110,7 +110,7 @@ export function Persons() {
               onSubmit={handleAddSubmit}
               onCancel={() => setIsAddDialogOpen(false)}
               isLoading={isAdding}
-              className="w-full md:w-[450px]"
+              className="w-full"
             />
           </div>
         </DialogContent>
@@ -118,7 +118,7 @@ export function Persons() {
 
       {/* Edit Dialog */}
       <Dialog open={!!editingPerson} onOpenChange={(open) => !open && setEditingPerson(null)}>
-        <DialogContent className="p-0 bg-transparent border-none shadow-none w-full max-w-lg items-center flex justify-center focus:outline-none focus-visible:outline-none">
+        <DialogContent className="p-0 bg-transparent border-none shadow-none w-[92vw] sm:max-w-lg items-center flex justify-center focus:outline-none focus-visible:outline-none">
           <div className="w-full">
              <DialogHeader className="sr-only">
                 <DialogTitle>Edit Family Profile</DialogTitle>
@@ -129,7 +129,7 @@ export function Persons() {
                 onSubmit={handleEditSubmit}
                 onCancel={() => setEditingPerson(null)}
                 isLoading={isAdding}
-                className="w-full md:w-[450px]"
+                className="w-full"
               />
             )}
           </div>

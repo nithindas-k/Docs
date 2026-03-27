@@ -104,16 +104,16 @@ export const FileUploadCard = React.forwardRef<HTMLDivElement, FileUploadCardPro
         className={cn("w-full min-w-0 rounded-xl border bg-background shadow-sm", className)}
         {...props}
       >
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           <div className="flex items-start justify-between">
-            <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
-                <UploadCloud className="h-6 w-6 text-muted-foreground" />
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-muted shrink-0">
+                <UploadCloud className="h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground" />
               </div>
-              <div>
-                <h3 className="text-lg font-semibold text-foreground">Upload files</h3>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Select and upload the files of your choice
+              <div className="min-w-0">
+                <h3 className="text-base sm:text-lg font-bold text-foreground truncate">Upload files</h3>
+                <p className="mt-0.5 text-[11px] sm:text-sm text-muted-foreground opacity-70">
+                  Select and upload documents
                 </p>
               </div>
             </div>
@@ -131,7 +131,7 @@ export const FileUploadCard = React.forwardRef<HTMLDivElement, FileUploadCardPro
             onDrop={handleDrop}
             onClick={triggerFileSelect}
             className={cn(
-              "mt-6 flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 text-center transition-colors duration-200",
+              "mt-5 sm:mt-6 flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-5 sm:p-8 text-center transition-colors duration-200",
               isDragging ? "border-primary bg-primary/10" : "border-muted-foreground/30 hover:border-primary/50"
             )}
           >
@@ -142,19 +142,19 @@ export const FileUploadCard = React.forwardRef<HTMLDivElement, FileUploadCardPro
               className="hidden"
               onChange={handleFileSelect}
             />
-            <UploadCloud className="mb-4 h-10 w-10 text-muted-foreground" />
-            <p className="font-semibold text-foreground">Choose a file or drag and drop it here.</p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              JPEG, PNG, PDF, and MP4 formats, up to 50 MB.
+            <UploadCloud className="mb-3 sm:mb-4 h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground opacity-50" />
+            <p className="text-sm sm:text-base font-bold text-foreground">Choose a file or drag it here.</p>
+            <p className="mt-1 text-[10px] sm:text-xs text-muted-foreground">
+              JPEG, PNG, PDF formats, up to 50 MB.
             </p>
-            <Button variant="outline" size="sm" className="mt-4 pointer-events-none">
+            <Button variant="outline" size="sm" className="mt-4 pointer-events-none h-8 sm:h-9 text-[11px] sm:text-xs px-6">
               Browse File
             </Button>
           </div>
         </div>
 
         {files.length > 0 && (
-          <div className="border-t p-6">
+          <div className="border-t p-4 sm:p-6">
             <ul className="space-y-4">
               <AnimatePresence>
                 {files.map((file) => (

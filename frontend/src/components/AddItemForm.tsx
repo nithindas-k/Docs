@@ -158,9 +158,9 @@ export function AddItemForm({ categoryName, onSubmit, onBack, isLoading }: AddIt
           <span className="text-xs text-muted-foreground">{fields.length} field(s)</span>
         </div>
 
-        <div className="space-y-3 max-h-96 overflow-y-auto">
+        <div className="space-y-2 max-h-80 sm:max-h-96 overflow-y-auto pr-1">
           {fields.map((field, index) => (
-            <div key={index} className="space-y-2 p-3 rounded-lg bg-accent/20 border border-border">
+            <div key={index} className="space-y-2 p-2.5 sm:p-3 rounded-xl bg-accent/20 border border-border">
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 <div>
                   <label className="text-xs font-semibold text-muted-foreground uppercase">Key</label>

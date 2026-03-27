@@ -88,12 +88,12 @@ export const PersonFormCard: React.FC<PersonFormCardProps> = ({
         },
       }}
       className={cn(
-        "relative w-full max-w-lg rounded-xl bg-background p-6 shadow-xl border border-border",
+        "relative w-full max-w-lg rounded-2xl sm:rounded-xl bg-background p-4 sm:p-6 shadow-xl border border-border",
         className
       )}
     >
       {tempImage ? (
-        <div className="mt-4">
+        <div className="mt-2 sm:mt-4">
             <h3 className="text-lg font-bold mb-4">Crop Profile Image</h3>
             <ImageCropper 
               imageSrc={tempImage} 
@@ -104,12 +104,12 @@ export const PersonFormCard: React.FC<PersonFormCardProps> = ({
       ) : (
         <>
             <div className="flex items-center justify-between">
-                <motion.h3 variants={FADE_IN_VARIANTS} className="text-xl font-semibold text-foreground">
+                <motion.h3 variants={FADE_IN_VARIANTS} className="text-lg sm:text-xl font-bold text-foreground tracking-tight">
                 {initialData ? "Edit Person" : "Add Person"}
                 </motion.h3>
             </div>
 
-            <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-6 md:grid md:grid-cols-3 md:gap-8">
+            <form onSubmit={handleSubmit} className="mt-4 sm:mt-6 flex flex-col gap-5 sm:gap-6 md:grid md:grid-cols-3 md:gap-8">
                 <motion.div variants={FADE_IN_VARIANTS} className="flex flex-col items-center gap-3 md:col-span-1">
                 <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
                     <Avatar className="h-24 w-24 border-2 border-dashed border-border bg-muted group-hover:border-primary/50 transition-colors">
