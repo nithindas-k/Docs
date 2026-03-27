@@ -1,5 +1,6 @@
 import { Menu, Search, User, LogOut } from 'lucide-react';
 import { Button } from './ui/button';
+import { Theme } from './ui/theme';
 import { Input } from './ui/input';
 
 interface NavbarProps {
@@ -33,6 +34,7 @@ export function Navbar({ setIsOpen, user, onLogout }: NavbarProps) {
       </div>
 
       <div className="flex items-center gap-4">
+        <Theme variant="tabs" size="sm" />
         <div className="flex items-center gap-3">
           <div className="hidden text-right md:block">
             <div className="text-sm font-medium">{user?.name || 'User'}</div>
