@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../features/hooks';
 import { loginSuccess } from '../features/authSlice';
 import { Button } from '../components/ui/button';
-import { Navigate, useSearchParams } from 'react-router-dom';
+import { Navigate, useSearchParams, useNavigate } from 'react-router-dom';
 import { API_URL } from '../constants';
 import { toast } from 'sonner';
 import { Logo } from '../components/ui/Logo';
@@ -12,6 +12,7 @@ export function Login() {
   const dispatch = useAppDispatch();
   const token = useAppSelector((state) => state.auth.token);
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const tokenParam = searchParams.get('token');
@@ -35,10 +36,21 @@ export function Login() {
   };
 
   return (
-    <div className="flex min-h-screen w-full items-center justify-center bg-[#fafafa] dark:bg-[#050505] px-4 relative">
-      <div className="absolute top-4 right-4 md:top-6 md:right-6">
-         <Theme variant="tabs" size="sm" />
-      </div>
+    <div className="flex min-h-screen w-full items-center justify-center bg-[#fafafa] dark:bg-[#050505] px-4 relative pt-14">
+      {/* Navbar */}
+      <nav className="fixed top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl px-4 md:px-6 h-14 flex items-center justify-between">
+        <div 
+          className="flex items-center gap-2 cursor-pointer transition-opacity hover:opacity-80" 
+          onClick={() => navigate('/')}
+        >
+          <Logo className="h-7 w-7 text-primary" />
+          <span className="font-bold text-lg font-mono tracking-tight hidden sm:block">DOCS</span>
+        </div>
+        <div className="flex items-center gap-2 md:gap-4">
+          <Theme variant="tabs" size="sm" />
+          <Button size="sm" variant="ghost" className="md:hidden" onClick={() => navigate('/')}>Back</Button>
+        </div>
+      </nav>
       <div className="w-full max-w-[360px] space-y-8">
         {/* Branding */}
         <div className="flex flex-col items-center gap-4">

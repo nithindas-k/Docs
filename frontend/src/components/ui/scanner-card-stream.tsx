@@ -5,7 +5,7 @@ import { AnimatedIDCard, AnimatedIDType } from './animated-id-card';
 
 const cardTypes: AnimatedIDType[] = ['aadhar', 'pan', 'driving', 'certificate'];
 
-// --- Helper function to generate ASCII-like code ---
+
 const ASCII_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789(){}[]<>;:,._-+=!@#$%^&*|\\/\"'`~?";
 const generateCode = (width: number, height: number): string => {
   let text = "";
@@ -19,7 +19,7 @@ const generateCode = (width: number, height: number): string => {
   return out;
 };
 
-// --- Component Props Type Definition ---
+
 type ScannerCardStreamProps = {
   initialSpeed?: number;
   direction?: -1 | 1;

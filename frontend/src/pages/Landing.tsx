@@ -6,6 +6,7 @@ import { ScannerCardStream } from '../components/ui/scanner-card-stream';
 import { Shield, Lock, Smartphone, Zap } from 'lucide-react';
 import { Theme } from '../components/ui/theme';
 import { useAppSelector } from '../features/hooks';
+import { AnimatedJobCardDemo } from '../components/ui/animated-card-demo';
 
 export function Landing() {
   const navigate = useNavigate();
@@ -19,11 +20,11 @@ export function Landing() {
       <nav className="fixed top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl px-4 md:px-6 h-14 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Logo className="h-7 w-7 text-primary" />
-          <span className="font-bold text-lg font-mono tracking-tight">DOCS</span>
+          <span className="font-bold text-lg font-mono tracking-tight hidden sm:block">DOCS</span>
         </div>
         <div className="flex items-center gap-2 md:gap-4">
           <Theme variant="tabs" size="sm" />
-          <Button variant="ghost" size="sm" onClick={() => navigate('/login')}>Sign In</Button>
+          <Button variant="ghost" size="sm" onClick={() => navigate('/login')} className="hidden sm:inline-flex">Sign In</Button>
           <Button size="sm" onClick={() => navigate('/login')} className="rounded-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm">Get Started</Button>
         </div>
       </nav>
@@ -90,14 +91,25 @@ export function Landing() {
         </div>
       </section>
 
-      {/* Simple Footer */}
-      <footer className="py-8 px-4 border-t text-center bg-card/20">
-        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <Logo className="h-6 w-6 text-primary/40" />
-            <span className="font-bold text-sm text-primary/40 tracking-tight">DOCS</span>
+      {/* Interactive Feature Cards */}
+      <section className="py-16 md:py-24 bg-card/10 overflow-hidden border-t">
+        <div className="max-w-5xl mx-auto px-4 text-center mb-8">
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Core Capabilities</h2>
+          <p className="text-sm text-muted-foreground font-medium max-w-md mx-auto mt-2">Manage your personal docs, share with family, or invite friends seamlessly.</p>
+        </div>
+        <AnimatedJobCardDemo />
+      </section>
+
+      {/* Premium Minimal Footer */}
+      <footer className="py-10 px-6 border-t border-border/30 bg-background/50 backdrop-blur-sm mt-auto">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-2.5 opacity-50 hover:opacity-100 transition-all duration-300 cursor-pointer grayscale hover:grayscale-0">
+            <Logo className="h-4 w-4 text-primary" />
+            <span className="font-bold text-xs font-mono tracking-[0.2em] uppercase text-foreground">DOCS</span>
           </div>
-          <p className="text-[10px] font-medium text-muted-foreground/40 uppercase tracking-widest">© 2026 Docs Digital Security Group. All rights reserved.</p>
+          <p className="text-[9px] font-bold text-muted-foreground/40 uppercase tracking-[0.3em]">
+            © {new Date().getFullYear()} Docs Digital Security Group. All rights reserved.
+          </p>
         </div>
       </footer>
     </div>
