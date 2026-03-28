@@ -1,10 +1,11 @@
 import type { ReactNode } from 'react';
 import { NavLink } from 'react-router-dom';
-import { CreditCard, Car, FileText, Landmark, GraduationCap, UserCheck, Book, Plus, LayoutDashboard, Users } from 'lucide-react';
+import { CreditCard, Car, FileText, Landmark, GraduationCap, UserCheck, Book, Plus, LayoutDashboard, Users, Download, CheckCircle2 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { Button } from './ui/button';
 import { Theme } from './ui/theme';
 import { Logo } from './ui/Logo';
+import { usePWAInstall } from '../hooks/usePWAInstall';
 
 const STYLED_ICONS: Record<string, ReactNode> = {
   'credit-card': <CreditCard className="w-5 h-5" />,
@@ -23,6 +24,8 @@ interface SidebarProps {
 }
 
 export function Sidebar({ categories, isOpen, setIsOpen }: SidebarProps) {
+  const { isInstallable, isInstalled, install } = usePWAInstall();
+
   return (
     <>
       <div
@@ -107,9 +110,37 @@ export function Sidebar({ categories, isOpen, setIsOpen }: SidebarProps) {
           </nav>
         </div>
 
-        <div className="mt-auto p-4 border-t lg:hidden">
-          <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-2 mb-3">Theme</div>
-          <Theme variant="tabs" size="sm" className="w-full" />
+        <div className="mt-auto p-4 border-t">
+          {(isInstallable || isInstalled) && (
+            <Button
+              variant="outline"
+              size="sm"
+              className={cn(
+                "w-full justify-start gap-3 mb-3 transition-all duration-300",
+                isInstalled
+                  ? "border-primary/30 text-primary bg-primary/5 cursor-default"
+                  : "border-primary/20 hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
+              )}
+              onClick={() => !isInstalled && install()}
+              disabled={isInstalled}
+            >
+              {isInstalled ? (
+                <>
+                  <CheckCircle2 className="w-4 h-4" />
+                  App Installed
+                </>
+              ) : (
+                <>
+                  <Download className="w-4 h-4" />
+                  Install App
+                </>
+              )}
+            </Button>
+          )}
+          <div className="lg:hidden">
+            <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-2 mb-3">Theme</div>
+            <Theme variant="tabs" size="sm" className="w-full" />
+          </div>
         </div>
       </aside>
     </>

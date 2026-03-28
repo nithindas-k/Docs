@@ -35,7 +35,7 @@ const initialJobs: JobCardProps[] = [
   },
 ];
 
-// --- DEMO COMPONENT ---
+
 export function AnimatedJobCardDemo() {
   const [cards, setCards] = useState(initialJobs);
 
