@@ -13,13 +13,13 @@ cloudinary.config({
  * Upload a file to Cloudinary and return the secure URL
  * @param fileBuffer - Buffer of the file to upload
  * @param fileName - Name of the file for reference
- * @param folder - Cloudinary folder path (default: 'lockr')
+ * @param folder - Cloudinary folder path (default: 'docs')
  * @returns Promise with secure_url from Cloudinary
  */
 async function uploadToCloudinary(
   fileBuffer: Buffer,
   fileName: string,
-  folder: string = 'lockr'
+  folder: string = 'docs'
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(

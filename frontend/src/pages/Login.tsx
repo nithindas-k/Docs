@@ -38,9 +38,9 @@ export function Login() {
       <div className="w-full max-w-sm space-y-6 text-center">
         <div className="space-y-2">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary font-mono text-2xl font-bold text-primary-foreground">
-            L
+            D
           </div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">DB Locker</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">Docs</h1>
           <p className="pt-1 text-sm text-muted-foreground">
             Your secure digital ID and document locker.
           </p>

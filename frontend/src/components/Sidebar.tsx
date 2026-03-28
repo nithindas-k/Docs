@@ -39,8 +39,8 @@ export function Sidebar({ categories, isOpen, setIsOpen }: SidebarProps) {
       >
         <div className="flex h-16 items-center border-b px-6">
           <div className="flex items-center gap-2 font-bold text-xl text-primary font-mono tracking-tight">
-            <div className="h-8 w-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">L</div>
-            DB Locker
+            <div className="h-8 w-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">D</div>
+            Docs
           </div>
         </div>
 

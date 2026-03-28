@@ -8,7 +8,7 @@ import { errorHandler } from './middlewares/errorMiddleware';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/db_locker';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/docs';
 
 
 app.use(cors({ origin: process.env.FRONTEND_URL || 'http://localhost:5173' }));

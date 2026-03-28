@@ -32,7 +32,7 @@ export function LogoutConfirmDialog({
           </div>
 
           <DialogDescription className="mt-3 text-sm leading-relaxed">
-            Are you sure you want to log out of Your <span className="font-bold text-foreground">DB Locker</span>? You will need to sign in again to access your secure documents.
+            Are you sure you want to log out of Your <span className="font-bold text-foreground">Docs</span>? You will need to sign in again to access your secure documents.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="gap-2 mt-4 sm:flex-row flex-col">

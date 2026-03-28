@@ -9,7 +9,7 @@ export class ApiError extends Error {
 
 class ApiService {
   private getToken() {
-    return localStorage.getItem('lockr_token');
+    return localStorage.getItem('docs_token');
   }
 
   private getHeaders() {

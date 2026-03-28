@@ -398,7 +398,7 @@ export function Persons() {
               <DialogTitle className="text-lg font-bold">Link a Vault</DialogTitle>
             </div>
             <DialogDescription className="text-xs text-muted-foreground mt-2 leading-relaxed">
-              Enter a friend's Gmail address. If they're on Lockr, they'll receive a link request and can accept or reject it. Once accepted, you can view their shared documents.
+              Enter a friend's Gmail address. If they're on Docs, they'll receive a link request and can accept or reject it. Once accepted, you can view their shared documents.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 mt-4">

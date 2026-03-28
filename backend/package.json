@@ -1,7 +1,7 @@
 {
-  "name": "db-locker-backend",
+  "name": "docs-backend",
   "version": "1.0.0",
-  "description": "Backend for DB Locker",
+  "description": "Backend for Docs",
   "main": "src/server.ts",
   "scripts": {
     "start": "node dist/server.js",

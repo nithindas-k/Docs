@@ -20,8 +20,8 @@ interface AuthState {
 
 const initialState: AuthState = {
   user: null,
-  token: localStorage.getItem('lockr_token'),
-  currentPersonId: localStorage.getItem('lockr_current_person'),
+  token: localStorage.getItem('docs_token'),
+  currentPersonId: localStorage.getItem('docs_current_person'),
   loading: false,
   error: null,
 };
@@ -39,22 +39,22 @@ const authSlice = createSlice({
       state.user = action.payload.user;
       state.token = action.payload.token;
       state.error = null;
-      localStorage.setItem('lockr_token', action.payload.token);
+      localStorage.setItem('docs_token', action.payload.token);
     },
     setCurrentPerson(state, action: PayloadAction<string | null>) {
       state.currentPersonId = action.payload;
       if (action.payload) {
-        localStorage.setItem('lockr_current_person', action.payload);
+        localStorage.setItem('docs_current_person', action.payload);
       } else {
-        localStorage.removeItem('lockr_current_person');
+        localStorage.removeItem('docs_current_person');
       }
     },
     logout(state) {
       state.user = null;
       state.token = null;
       state.currentPersonId = null;
-      localStorage.removeItem('lockr_token');
-      localStorage.removeItem('lockr_current_person');
+      localStorage.removeItem('docs_token');
+      localStorage.removeItem('docs_current_person');
     },
   },
   extraReducers: (builder) => {
@@ -70,7 +70,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch profile';
         state.token = null; // Auto logout if profile fails
-        localStorage.removeItem('lockr_token');
+        localStorage.removeItem('docs_token');
       });
   },
 });
