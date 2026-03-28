@@ -3,6 +3,7 @@ import { Button } from './ui/button';
 import { Theme } from './ui/theme';
 import { Input } from './ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { Logo } from './ui/Logo';
 
 interface NavbarProps {
   setIsOpen: (open: boolean) => void;
@@ -22,6 +23,11 @@ export function Navbar({ setIsOpen, user, onLogout }: NavbarProps) {
         <Menu className="h-5 w-5" />
         <span className="sr-only">Toggle Sidebar</span>
       </Button>
+
+      <div className="flex lg:hidden items-center gap-2 font-bold text-lg text-primary font-mono tracking-tight shrink-0 mr-auto">
+        <Logo className="h-9 w-9 text-primary shrink-0" />
+        Docs
+      </div>
 
       <div className="flex-1">
         <div className="relative max-w-sm hidden md:block group">

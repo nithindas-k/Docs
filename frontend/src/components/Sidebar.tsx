@@ -4,6 +4,7 @@ import { CreditCard, Car, FileText, Landmark, GraduationCap, UserCheck, Book, Pl
 import { cn } from '../lib/utils';
 import { Button } from './ui/button';
 import { Theme } from './ui/theme';
+import { Logo } from './ui/Logo';
 
 const STYLED_ICONS: Record<string, ReactNode> = {
   'credit-card': <CreditCard className="w-5 h-5" />,
@@ -39,7 +40,7 @@ export function Sidebar({ categories, isOpen, setIsOpen }: SidebarProps) {
       >
         <div className="flex h-16 items-center border-b px-6">
           <div className="flex items-center gap-2 font-bold text-xl text-primary font-mono tracking-tight">
-            <div className="h-8 w-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">D</div>
+            <Logo className="h-11 w-11 text-primary shrink-0" />
             Docs
           </div>
         </div>

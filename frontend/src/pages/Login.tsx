@@ -5,6 +5,7 @@ import { Button } from '../components/ui/button';
 import { Navigate, useSearchParams } from 'react-router-dom';
 import { API_URL } from '../constants';
 import { toast } from 'sonner';
+import { Logo } from '../components/ui/Logo';
 
 export function Login() {
   const dispatch = useAppDispatch();
@@ -37,8 +38,8 @@ export function Login() {
     <div className="flex h-screen w-full items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm space-y-6 text-center">
         <div className="space-y-2">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary font-mono text-2xl font-bold text-primary-foreground">
-            D
+          <div className="mx-auto flex h-40 w-40 items-center justify-center rounded-[2.5rem] bg-primary/10 mb-4 border-2 border-primary/5 shadow-sm transition-all duration-700 hover:scale-105">
+            <Logo className="h-32 w-32 text-primary" />
           </div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground">Docs</h1>
           <p className="pt-1 text-sm text-muted-foreground">
