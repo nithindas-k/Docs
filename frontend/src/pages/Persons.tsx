@@ -271,7 +271,6 @@ export function Persons() {
             title="Choose a person"
             profiles={allProfiles}
             onProfileSelect={(id) => {
-              // If it's a linked vault, navigate to linked vault detail
               const linkedProfile = linkedProfiles.find((lp) => lp.id === id);
               if (linkedProfile) {
                 navigate(`/linked/${linkedProfile.connectionId}`);
@@ -281,7 +280,7 @@ export function Persons() {
             }}
             onProfileEdit={(id) => {
               const lp = linkedProfiles.find((lp) => lp.id === id);
-              if (lp) return; // no edit for linked users
+              if (lp) return;
               setEditingPerson(persons.find((p) => p._id === id) || null);
             }}
             onProfileDelete={(id) => {
