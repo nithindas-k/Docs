@@ -45,7 +45,7 @@ export function AddItemForm({ categoryName, onSubmit, onBack, isLoading }: AddIt
       return;
     }
 
-    // If only one image is picked, show cropper
+    
     if (validFiles.length === 1 && validFiles[0].type.startsWith('image/')) {
       const file = validFiles[0];
       const reader = new FileReader();
@@ -54,7 +54,7 @@ export function AddItemForm({ categoryName, onSubmit, onBack, isLoading }: AddIt
       };
       reader.readAsDataURL(file);
     } else {
-      // Add all valid files directly
+    
       const newFiles = validFiles.map(file => ({
         id: `${file.name}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         file,
