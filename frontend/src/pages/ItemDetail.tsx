@@ -10,8 +10,11 @@ import {
   Eye, 
   Loader2,
   Trash2,
-  Edit
+  Edit,
+  Search,
+  X
 } from "lucide-react";
+import { Input } from "../components/ui/input";
 import { toast } from "sonner";
 import { DeleteConfirmDialog } from "../components/DeleteConfirmDialog";
 import { Button } from "../components/ui/button";
@@ -63,6 +66,7 @@ export function ItemDetail() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const item = id ? itemsById[id] : null;
   const category = categories.find(c => c._id === item?.category);
@@ -203,57 +207,97 @@ export function ItemDetail() {
       </div>
 
       <div className="space-y-4">
-        <h3 className="text-[10px] sm:text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em] px-1 opacity-70">
-          Information Details
-        </h3>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1">
+          <h3 className="text-[10px] sm:text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em] opacity-70">
+            Information Details
+          </h3>
+          <div className="relative w-full sm:w-64 group">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+            <Input
+              placeholder="Search keys or values..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="h-8 pl-9 pr-8 text-[10px] sm:text-xs bg-muted/20 border-border/50 rounded-lg focus-visible:ring-1 focus-visible:ring-primary/30"
+            />
+            {searchTerm && (
+              <button 
+                onClick={() => setSearchTerm("")}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 flex items-center justify-center rounded-full hover:bg-muted text-muted-foreground"
+              >
+                <X className="h-2.5 w-2.5" />
+              </button>
+            )}
+          </div>
+        </div>
 
-        {/* Desktop View: Traditional Table */}
-        <div className="hidden sm:block border rounded-xl overflow-hidden bg-background shadow-sm">
-          <Table>
-            <TableHeader className="bg-muted/30">
-              <TableRow>
-                <TableHead className="py-4 px-6 text-[10px] font-bold uppercase tracking-widest text-muted-foreground w-1/3">Label</TableHead>
-                <TableHead className="py-4 px-6 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Value</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {item.fields.map((field, i) => (
-                <TableRow key={i} className="hover:bg-muted/5 transition-colors border-b last:border-0">
-                  <TableCell className="py-4 px-6 text-xs font-bold text-muted-foreground/70 uppercase">
-                    {field.key || 'Detail'}
-                  </TableCell>
-                  <TableCell className="py-4 px-6">
-                    <div className="flex items-center justify-between gap-4 group/row">
-                      <p className="text-sm font-semibold tracking-tight break-words font-mono text-foreground">
+        {/* Filtered Fields */}
+        {(() => {
+          const filteredFields = (item.fields || []).filter(f => 
+            f.key.toLowerCase().includes(searchTerm.toLowerCase()) || 
+            f.value.toLowerCase().includes(searchTerm.toLowerCase())
+          );
+
+          if (filteredFields.length === 0) {
+            return (
+              <div className="py-12 border border-dashed rounded-2xl flex flex-col items-center justify-center text-center px-4 bg-muted/5">
+                <p className="text-xs font-semibold text-muted-foreground/50 uppercase tracking-widest">No matching fields found</p>
+                <Button variant="link" size="sm" onClick={() => setSearchTerm("")} className="mt-1 text-[10px] text-primary">Clear search</Button>
+              </div>
+            );
+          }
+
+          return (
+            <>
+              {/* Desktop View: Traditional Table */}
+              <div className="hidden sm:block border rounded-xl overflow-hidden bg-background shadow-sm">
+                <Table>
+                  <TableHeader className="bg-muted/30">
+                    <TableRow>
+                      <TableHead className="py-4 px-6 text-[10px] font-bold uppercase tracking-widest text-muted-foreground w-1/3">Label</TableHead>
+                      <TableHead className="py-4 px-6 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Value</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredFields.map((field, i) => (
+                      <TableRow key={i} className="hover:bg-muted/5 transition-colors border-b last:border-0">
+                        <TableCell className="py-4 px-6 text-xs font-bold text-muted-foreground/70 uppercase">
+                          {field.key || 'Detail'}
+                        </TableCell>
+                        <TableCell className="py-4 px-6">
+                          <div className="flex items-center justify-between gap-4 group/row">
+                            <p className="text-sm font-semibold tracking-tight break-words font-mono text-foreground">
+                              {field.value}
+                            </p>
+                            <CopyButton value={field.value} />
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Mobile View: Modern Stacked Cards */}
+              <div className="sm:hidden grid grid-cols-1 gap-3">
+                {filteredFields.map((field, i) => (
+                  <div key={i} className="group relative bg-muted/20 border border-border/50 rounded-2xl p-4 transition-all active:bg-muted/30">
+                    <div className="flex flex-col gap-1.5">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.15em] opacity-60">
+                          {field.key || 'Detail'}
+                        </span>
+                        <CopyButton value={field.value} />
+                      </div>
+                      <p className="text-[13px] font-bold tracking-tight text-foreground/90 break-words leading-relaxed font-mono">
                         {field.value}
                       </p>
-                      <CopyButton value={field.value} />
                     </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-
-        {/* Mobile View: Modern Stacked Cards */}
-        <div className="sm:hidden grid grid-cols-1 gap-3">
-          {item.fields.map((field, i) => (
-            <div key={i} className="group relative bg-muted/20 border border-border/50 rounded-2xl p-4 transition-all active:bg-muted/30">
-              <div className="flex flex-col gap-1.5">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.15em] opacity-60">
-                    {field.key || 'Detail'}
-                  </span>
-                  <CopyButton value={field.value} />
-                </div>
-                <p className="text-[13px] font-bold tracking-tight text-foreground/90 break-words leading-relaxed font-mono">
-                  {field.value}
-                </p>
+                  </div>
+                ))}
               </div>
-            </div>
-          ))}
-        </div>
+            </>
+          );
+        })()}
       </div>
 
       {/* Full Size Image Modal */}
