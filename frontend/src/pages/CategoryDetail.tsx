@@ -149,7 +149,7 @@ export function CategoryDetail() {
               Add {category?.name || 'Item'}
             </Button>
           </DialogTrigger>
-          <DialogContent className="w-[95vw] sm:max-w-lg bg-background border shadow-xl rounded-3xl p-4 sm:p-6 overflow-hidden">
+          <DialogContent className="w-[95vw] sm:max-w-lg bg-background border shadow-xl rounded-3xl p-4 sm:p-6 max-h-[90vh] overflow-y-auto scrollbar-hide">
             <DialogHeader>
               <DialogTitle className="text-xl font-bold tracking-tight mb-1">Add New {category?.name}</DialogTitle>
               <DialogDescription className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest mt-1 opacity-60">
@@ -251,7 +251,7 @@ export function CategoryDetail() {
 
       <Dialog open={editingItem?._id !== undefined && editingItem?._id !== null} onOpenChange={(open) => !open && setEditingItem(null)}>
         {editingItem && (
-          <DialogContent className="max-w-md">
+          <DialogContent className="w-[95vw] sm:max-w-lg bg-background border shadow-xl rounded-3xl p-4 sm:p-6 max-h-[90vh] overflow-y-auto scrollbar-hide">
             <DialogHeader>
               <DialogTitle>Edit {category?.name}</DialogTitle>
               <DialogDescription>

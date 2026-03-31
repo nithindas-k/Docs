@@ -1,0 +1,43 @@
+# Implementation Plan: Universal Document OCR & Data Extraction
+
+## 1. Backend Architecture Evolution
+- **Refactor `AadhaarScannerService.ts` to `UniversalScannerService.ts`**:
+  - Create a base `BaseScanner` class with common OCR/QR utilities.
+  - Implement specialized parsers for each document type:
+    - `PANScanner`: Focus on PAN number pattern `[A-Z]{5}[0-9]{4}[A-Z]{1}` and Date extraction.
+    - `DLScanner`: Focus on Driving Licence number patterns and validity dates.
+    - `PassportScanner`: Use MRZ (Machine Readable Zone) parsing logic for faster/accurate data.
+    - `VoterIDScanner`: Focus on EPIC number and Relation Name.
+
+## 2. Document Recognition & Classification
+- **Automatic Detection**: Use keyword-based classification before parsing:
+  - If text contains "INCOME TAX DEPARTMENT" -> PAN Card.
+  - If text contains "PASSPORT" or "REPUBLIC OF INDIA" -> Passport.
+  - If text contains "DRIVING LICENCE" -> Driving Licence.
+- **Side Requirements**:
+  - **Aadhaar**: Maintain Front + Back requirement.
+  - **Others**: Update Frontend to allow single-side scanning for PAN, Passport, DL, etc.
+
+## 3. Field Mapping Definitions
+- **PAN Card**: `PAN Number`, `Name`, `Father's Name`, `DOB`.
+- **Driving Licence**: `DL Number`, `Name`, `DOB`, `Validity`, `Address`.
+- **SSLC**: `Register Number`, `Name`, `Month/Year`, `Total Marks`.
+- **Voter ID**: `EPIC Number`, `Name`, `Relation Name`, `Gender`.
+
+## 4. Frontend Integration
+- **Category-Aware Scanner**:
+  - `AddItemForm` & `EditItemForm` will pass the `categoryName` to the scanner API.
+  - Backend will use the category name as a hint to prioritize specific OCR patterns.
+- **Improved UI Feedback**:
+  - Show "Scanning PAN Card..." vs "Scanning Aadhaar..." for better UX.
+  - Update `isComplete` logic per document type (e.g., PAN is complete with just Name and PAN Number).
+
+## 5. Technology Enhancements
+- **Tesseract Fine-Tuning**: Optimize OCR for small fonts (common on PAN/DL).
+- **MRZ Parsing**: Integrated specialized regex for Passport MRZ lines for 100% accuracy on text-heavy passports.
+
+## Next Steps (Priority Order):
+1. Rename and generalize the Scanner Controller.
+2. Implement PAN Card OCR (easiest next target).
+3. Implement Driving Licence patterns.
+4. Add Passport MRZ support.

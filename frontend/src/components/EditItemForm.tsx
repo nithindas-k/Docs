@@ -21,7 +21,7 @@ interface EditItemFormProps {
   categoryName: string;
   itemTitle: string;
   itemFields: Field[];
-  itemPhotoUrl?: string; // Original photo URL from database
+  itemPhotoUrl?: string;
   onSubmit: (data: { title: string; fields: Field[]; photoFiles?: File[] }) => void;
   isLoading?: boolean;
 }
@@ -39,11 +39,11 @@ export function EditItemForm({
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [imageToCrop, setImageToCrop] = useState<{ file: File; src: string } | null>(null);
   const [isScanning, setIsScanning] = useState(false);
+  const [isScannable, setIsScannable] = useState(false);
 
   useEffect(() => {
     setTitle(itemTitle);
     setFields(itemFields.length > 0 ? itemFields : [{ key: '', value: '', isEncrypted: false }]);
-    
     if (itemPhotoUrl) {
       setUploadedFiles([
         {
@@ -58,6 +58,10 @@ export function EditItemForm({
       setUploadedFiles([]);
     }
   }, [itemTitle, itemFields, itemPhotoUrl]);
+
+  useEffect(() => {
+    setIsScannable(['aadhaar', 'pan', 'driving', 'licence', 'passport', 'voter', 'sslc', 'identity'].some(kw => categoryName.toLowerCase().includes(kw)));
+  }, [categoryName]);
 
   const handleFilesChange = async (files: File[]) => {
     const validFiles = files.filter(file => {
@@ -143,22 +147,49 @@ export function EditItemForm({
   const handleScanSingleFile = async (file: File, id: string) => {
     const formData = new FormData();
     formData.append('image', file);
+    formData.append('category', categoryName);
     try {
-      const result = await api.postFormData<any>(`/scanner/scan-aadhaar`, formData);
+      const result = await api.postFormData<any>(`/scanner/scan`, formData);
       if (result.success && result.data) {
         const data = result.data;
-        if (!data.aadhaarNumber && !data.isFront && !data.isBack) {
-           setUploadedFiles(prev => prev.map(item => item.id === id ? { ...item, status: 'completed' as const } : item));
+        if (!data.documentId && !data.isFront && !data.isBack) {
+           setUploadedFiles(prev => prev.map(item => item.id === id ? { ...item, status: 'error' as const } : item));
+           toast.error(`This does not appear to be a valid ${categoryName} document.`);
            return;
         }
         setUploadedFiles(prev => prev.map(item => item.id === id ? { ...item, status: 'completed' as const, side: result.detectedSide } : item));
 
         const newFields: Field[] = [];
-        if (data.aadhaarNumber) newFields.push({ key: 'Aadhaar Number', value: data.aadhaarNumber, isEncrypted: true });
+        if (data.documentId) {
+          const categoryUpper = categoryName.toUpperCase();
+          let label = `${categoryName} Number`;
+          if (categoryUpper.includes('AADHAAR')) label = 'Aadhaar Number';
+          else if (categoryUpper.includes('PAN')) label = 'PAN Number';
+          else if (categoryUpper.includes('DRIVING')) label = 'DL Number';
+          else if (categoryUpper.includes('PASSPORT')) label = 'Passport Number';
+          else if (categoryUpper.includes('VOTER')) label = 'Voter ID';
+          else if (categoryUpper.includes('SSLC')) label = 'Register Number';
+
+          newFields.push({ key: label, value: data.documentId, isEncrypted: true });
+        }
+
         if (data.name) newFields.push({ key: 'Name', value: data.name, isEncrypted: true });
         if (data.dob) newFields.push({ key: 'DOB', value: data.dob, isEncrypted: true });
         if (data.gender) newFields.push({ key: 'Gender', value: data.gender, isEncrypted: true });
         if (data.address) newFields.push({ key: 'Address', value: data.address, isEncrypted: true });
+        if (data.school) newFields.push({ key: 'Institution', value: data.school, isEncrypted: false });
+
+        if (data.grades && typeof data.grades === 'object') {
+          Object.entries(data.grades).forEach(([subject, grade]) => {
+            if (grade) newFields.push({ key: subject, value: String(grade), isEncrypted: false });
+          });
+        }
+
+        if (data.extraFields && typeof data.extraFields === 'object') {
+          Object.entries(data.extraFields).forEach(([key, val]) => {
+            if (val) newFields.push({ key, value: String(val), isEncrypted: true });
+          });
+        }
 
         setFields(prev => {
           const updated = [...prev];
@@ -173,10 +204,13 @@ export function EditItemForm({
           return updated.filter(f => f.key.trim() || f.value.trim());
         });
 
-        toast.success('Successfully scanned and extracted data!', { icon: <ShieldCheck className="h-4 w-4 text-green-500" /> });
+        const docType = result.documentType || categoryName;
+        toast.success(`${docType} verified and extracted!`, { icon: <ShieldCheck className="h-4 w-4 text-green-500" /> });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Scan failed:', error);
+      setUploadedFiles(prev => prev.map(f => f.id === id ? { ...f, status: 'error' as const } : f));
+      toast.error(error.message || 'Scan failed. Please ensure the image is clear.');
     }
   };
 
@@ -216,8 +250,6 @@ export function EditItemForm({
     onSubmit({ title: title.trim(), fields: validFields, photoFiles: newFiles });
   };
 
-  const isAadhaarScan = categoryName.toLowerCase().includes('aadhaar') || categoryName.toLowerCase().includes('identity');
-
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <Dialog open={!!imageToCrop} onOpenChange={(open) => !open && setImageToCrop(null)}>
@@ -231,7 +263,7 @@ export function EditItemForm({
 
       <div className="space-y-3">
         <FileUploadCard files={uploadedFiles} onFilesChange={handleFilesChange} onFileRemove={handleFileRemove} />
-        {isAadhaarScan && uploadedFiles.length > 0 && (
+        {isScannable && uploadedFiles.length > 0 && (
           <Button type="button" onClick={handleManualScan} disabled={isScanning} variant="secondary" className="w-full h-11 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 font-bold transition-all gap-2">
             {isScanning ? <span className="flex items-center gap-2"><span className="h-4 w-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />Extracting...</span> : <span className="flex items-center gap-2"><Plus className="h-4 w-4" />Scan & Refresh Data</span>}
           </Button>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { api } from '../services/api';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -19,17 +19,25 @@ interface Field {
 
 interface AddItemFormProps {
   categoryName: string;
-  onSubmit: (data: { title: string; fields: Field[]; photoFiles?: File[] }) => Promise<void> | void;
-  onBack?: () => void;
+  onSubmit: (data: { title: string; fields: Field[]; photoFiles?: File[] }) => void;
   isLoading?: boolean;
 }
 
-export function AddItemForm({ categoryName, onSubmit, onBack, isLoading }: AddItemFormProps) {
+export function AddItemForm({
+  categoryName,
+  onSubmit,
+  isLoading,
+}: AddItemFormProps) {
   const [title, setTitle] = useState('');
   const [fields, setFields] = useState<Field[]>([{ key: '', value: '', isEncrypted: false }]);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [imageToCrop, setImageToCrop] = useState<{ file: File; src: string } | null>(null);
   const [isScanning, setIsScanning] = useState(false);
+  const [isScannable, setIsScannable] = useState(false);
+
+  useEffect(() => {
+    setIsScannable(['aadhaar', 'pan', 'driving', 'licence', 'passport', 'voter', 'sslc', 'identity'].some(kw => categoryName.toLowerCase().includes(kw)));
+  }, [categoryName]);
 
   const handleFilesChange = async (files: File[]) => {
     const validFiles = files.filter(file => {
@@ -67,21 +75,18 @@ export function AddItemForm({ categoryName, onSubmit, onBack, isLoading }: AddIt
 
   const handleManualScan = async () => {
     if (uploadedFiles.length === 0) {
-      toast.error('Please upload at least one image first');
+      toast.error('Please upload an image first');
       return;
     }
 
-    const imageFiles = uploadedFiles.filter(f => f.file.type.startsWith('image/'));
-    if (imageFiles.length === 0) {
-      toast.error('No images found to scan');
-      return;
-    }
+    const scanFiles = uploadedFiles.filter(f => f.file && f.file.size > 0);
+    if (scanFiles.length === 0) return;
 
     setIsScanning(true);
-    toast.info(`Scanning ${imageFiles.length} image(s)...`);
+    toast.info(`Scanning document(s)...`);
 
     try {
-      for (const fileItem of imageFiles) {
+      for (const fileItem of scanFiles) {
         setUploadedFiles(prev => prev.map(f => f.id === fileItem.id ? { ...f, status: 'scanning' as const } : f));
         await handleScanSingleFile(fileItem.file, fileItem.id);
       }
@@ -91,9 +96,9 @@ export function AddItemForm({ categoryName, onSubmit, onBack, isLoading }: AddIt
         const hasBack = allFiles.some(f => f.side === 'back');
 
         if (hasFront && !hasBack) {
-          toast.warning('Front side detected. Please upload the back side for address.', { icon: <User className="h-4 w-4 text-primary" /> });
+          toast.warning('Front side detected. Upload the back side for address.', { icon: <User className="h-4 w-4 text-primary" /> });
         } else if (hasBack && !hasFront) {
-          toast.warning('Back side detected. Please upload the front side for identity.', { icon: <Home className="h-4 w-4 text-primary" /> });
+          toast.warning('Back side detected. Upload the front side for identity.', { icon: <Home className="h-4 w-4 text-primary" /> });
         }
         return allFiles;
       });
@@ -105,27 +110,54 @@ export function AddItemForm({ categoryName, onSubmit, onBack, isLoading }: AddIt
   const handleScanSingleFile = async (file: File, id: string) => {
     const formData = new FormData();
     formData.append('image', file);
+    formData.append('category', categoryName);
 
     try {
-      const result = await api.postFormData<any>(`/scanner/scan-aadhaar`, formData);
+      const result = await api.postFormData<any>(`/scanner/scan`, formData);
 
       if (result.success && result.data) {
         const data = result.data;
         
-        if (!data.aadhaarNumber && !data.isFront && !data.isBack) {
+        if (!data.documentId && !data.isFront && !data.isBack) {
            setUploadedFiles(prev => prev.map(item => item.id === id ? { ...item, status: 'error' as const } : item));
-           toast.error('This does not appear to be a valid Aadhaar card.', { icon: '!' });
+           toast.error(`This does not appear to be a valid ${categoryName} document.`);
            return;
         }
 
         setUploadedFiles(prev => prev.map(item => item.id === id ? { ...item, status: 'completed' as const, side: result.detectedSide } : item));
 
         const newFields: Field[] = [];
-        if (data.aadhaarNumber) newFields.push({ key: 'Aadhaar Number', value: data.aadhaarNumber, isEncrypted: true });
+        
+        if (data.documentId) {
+          const categoryUpper = categoryName.toUpperCase();
+          let label = `${categoryName} Number`;
+          if (categoryUpper.includes('AADHAAR')) label = 'Aadhaar Number';
+          else if (categoryUpper.includes('PAN')) label = 'PAN Number';
+          else if (categoryUpper.includes('DRIVING')) label = 'DL Number';
+          else if (categoryUpper.includes('PASSPORT')) label = 'Passport Number';
+          else if (categoryUpper.includes('VOTER')) label = 'Voter ID';
+          else if (categoryUpper.includes('SSLC')) label = 'Register Number';
+
+          newFields.push({ key: label, value: data.documentId, isEncrypted: true });
+        }
+
         if (data.name) newFields.push({ key: 'Name', value: data.name, isEncrypted: true });
         if (data.dob) newFields.push({ key: 'DOB', value: data.dob, isEncrypted: true });
         if (data.gender) newFields.push({ key: 'Gender', value: data.gender, isEncrypted: true });
         if (data.address) newFields.push({ key: 'Address', value: data.address, isEncrypted: true });
+        if (data.school) newFields.push({ key: 'Institution', value: data.school, isEncrypted: false });
+        
+        if (data.grades && typeof data.grades === 'object') {
+          Object.entries(data.grades).forEach(([subject, grade]) => {
+            if (grade) newFields.push({ key: subject, value: String(grade), isEncrypted: false });
+          });
+        }
+
+        if (data.extraFields && typeof data.extraFields === 'object') {
+          Object.entries(data.extraFields).forEach(([key, val]) => {
+            if (val) newFields.push({ key, value: String(val), isEncrypted: true });
+          });
+        }
 
         setFields(prev => {
           const updated = [...prev];
@@ -140,15 +172,13 @@ export function AddItemForm({ categoryName, onSubmit, onBack, isLoading }: AddIt
           return updated.filter(f => f.key.trim() || f.value.trim());
         });
 
-        if (data.qrParsed) {
-          toast.success('Aadhaar verified and extracted!', { icon: <ShieldCheck className="h-4 w-4 text-green-500" /> });
-        } else {
-          toast.success('Aadhaar data extracted.');
-        }
+        const docType = result.documentType || categoryName;
+        toast.success(`${docType} verified and extracted!`, { icon: <ShieldCheck className="h-4 w-4 text-green-500" /> });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Scan failed:', error);
       setUploadedFiles(prev => prev.map(f => f.id === id ? { ...f, status: 'error' as const } : f));
+      toast.error(error.message || 'Scan failed. Please ensure the image is clear.');
     }
   };
 
@@ -164,7 +194,7 @@ export function AddItemForm({ categoryName, onSubmit, onBack, isLoading }: AddIt
         file: croppedFile,
         progress: 100,
         status: 'completed' as const,
-      }]);
+      }].slice(0, MAX_PHOTOS));
     } catch (e) {
       console.error('Cropping failed:', e);
     }
@@ -180,21 +210,13 @@ export function AddItemForm({ categoryName, onSubmit, onBack, isLoading }: AddIt
     setFields(updated);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) { toast.error('Title is required'); return; }
-    const validFields = fields.filter(f => f.key.trim() || f.value.trim());
-    try {
-      await onSubmit({ title: title.trim(), fields: validFields, photoFiles: uploadedFiles.map(f => f.file) });
-      setTitle('');
-      setFields([{ key: '', value: '', isEncrypted: false }]);
-      setUploadedFiles([]);
-    } catch (err) {
-      console.error('Submit failed:', err);
-    }
+    const validFields = fields.filter((f) => f.key.trim() || f.value.trim());
+    const newFiles = uploadedFiles.filter(f => f.file && f.file.size > 0).map(f => f.file);
+    onSubmit({ title: title.trim(), fields: validFields, photoFiles: newFiles });
   };
-
-  const isAadhaarScan = categoryName.toLowerCase().includes('aadhaar') || categoryName.toLowerCase().includes('identity');
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -209,7 +231,7 @@ export function AddItemForm({ categoryName, onSubmit, onBack, isLoading }: AddIt
 
       <div className="space-y-3">
         <FileUploadCard files={uploadedFiles} onFilesChange={handleFilesChange} onFileRemove={handleFileRemove} />
-        {isAadhaarScan && uploadedFiles.length > 0 && (
+        {isScannable && uploadedFiles.length > 0 && (
           <Button type="button" onClick={handleManualScan} disabled={isScanning} variant="secondary" className="w-full h-11 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 font-bold transition-all gap-2">
             {isScanning ? <span className="flex items-center gap-2"><span className="h-4 w-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />Extracting...</span> : <span className="flex items-center gap-2"><Plus className="h-4 w-4" />Scan & Extract Data</span>}
           </Button>
@@ -226,7 +248,7 @@ export function AddItemForm({ categoryName, onSubmit, onBack, isLoading }: AddIt
           <label className="text-sm font-medium text-foreground">Details</label>
           <span className="text-xs text-muted-foreground">{fields.length} field(s)</span>
         </div>
-        <div className="space-y-2 max-h-80 sm:max-h-96 overflow-y-auto pr-1">
+        <div className="grid grid-cols-1 gap-2 max-h-80 sm:max-h-96 overflow-y-auto pr-1">
           {fields.map((field, index) => (
             <div key={index} className="space-y-2 p-2.5 sm:p-3 rounded-xl bg-accent/20 border border-border">
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -254,10 +276,9 @@ export function AddItemForm({ categoryName, onSubmit, onBack, isLoading }: AddIt
         </Button>
       </div>
 
-      <div className="flex gap-2 pt-2">
-        {onBack && <Button type="button" variant="outline" onClick={onBack} className="px-6 rounded-xl font-bold">Back</Button>}
+      <div className="flex gap-2">
         <Button type="submit" disabled={isLoading || isScanning} className="flex-1 rounded-xl font-bold">
-          {isScanning ? 'Scanning...' : (isLoading ? 'Saving...' : `Save ${categoryName}`)}
+          {isLoading ? 'Saving...' : 'Add to Collection'}
         </Button>
       </div>
     </form>

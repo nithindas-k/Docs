@@ -24,7 +24,10 @@ class ApiService {
     const response = await fetch(`${API_URL}${path}`, {
       headers: this.getHeaders(),
     });
-    if (!response.ok) throw new ApiError('API Error', response.status);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new ApiError(errorData.message || 'API Error', response.status);
+    }
     return response.json();
   }
 
@@ -34,7 +37,10 @@ class ApiService {
       headers: this.getHeaders(),
       body: JSON.stringify(body),
     });
-    if (!response.ok) throw new ApiError('API Error', response.status);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new ApiError(errorData.message || 'API Error', response.status);
+    }
     return response.json();
   }
 
@@ -46,7 +52,10 @@ class ApiService {
       },
       body: formData,
     });
-    if (!response.ok) throw new ApiError('API Error', response.status);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new ApiError(errorData.message || 'API Error', response.status);
+    }
     return response.json();
   }
 
@@ -56,7 +65,10 @@ class ApiService {
       headers: this.getHeaders(),
       body: JSON.stringify(body),
     });
-    if (!response.ok) throw new ApiError('API Error', response.status);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new ApiError(errorData.message || 'API Error', response.status);
+    }
     return response.json();
   }
 
@@ -68,7 +80,10 @@ class ApiService {
       },
       body: formData,
     });
-    if (!response.ok) throw new ApiError('API Error', response.status);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new ApiError(errorData.message || 'API Error', response.status);
+    }
     return response.json();
   }
 
@@ -77,7 +92,10 @@ class ApiService {
       method: 'DELETE',
       headers: this.getHeaders(),
     });
-    if (!response.ok) throw new ApiError('API Error', response.status);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new ApiError(errorData.message || 'API Error', response.status);
+    }
     return response.json();
   }
 }
