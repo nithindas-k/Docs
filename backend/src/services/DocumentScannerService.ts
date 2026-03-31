@@ -12,16 +12,31 @@ const groq = new Groq({
 export interface DocumentData {
   documentId?: string;
   name?: string;
+  nameInMalayalam?: string;
   dob?: string;
   gender?: string;
   address?: string;
+  state?: string;
+  pincode?: string;
+  nationality?: string;
+  religion?: string;
+  caste?: string;
+  school?: string;
+  board?: string;
+  yearOfPassing?: string;
+  registerNumber?: string;
+  grades?: any;
+  fathersName?: string;
+  mothersName?: string;
+  bloodGroup?: string;
+  validity?: string;
+  issueDate?: string;
+  extraFields?: any;
   isFront?: boolean;
   isBack?: boolean;
   isComplete?: boolean;
   documentType?: string;
-  school?: string;
-  grades?: any;
-  extraFields?: any;
+  confidence?: string;
 }
 
 export class DocumentScannerService {
@@ -35,133 +50,177 @@ export class DocumentScannerService {
       
       const base64Image = processedImage.toString('base64');
 
-    const visionModels = [
-      "meta-llama/llama-4-scout-17b-16e-instruct",
-      "llama-3.2-11b-vision-preview" // Fallback but likely decommissioned too
-    ];
+      const visionModels = [
+        "meta-llama/llama-4-scout-17b-16e-instruct",
+        "llama-3.2-11b-vision-preview"
+      ];
 
-    let lastError: any;
-    for (const model of visionModels) {
-      try {
-        const response = await groq.chat.completions.create({
-          model: model,
-          messages: [
-            {
-              role: "user",
-              content: [
-                {
-                  type: "text",
-                  text: `You are a document verification and data extraction AI. 
-Your job is to:
-1. Verify if the uploaded image is a valid official document
-2. Check if it matches the expected document category
-3. Extract structured data from the document
-Always respond in valid JSON format only. No extra text.
+      let lastError: any;
+      for (const model of visionModels) {
+        try {
+          const response = await groq.chat.completions.create({
+            model: model,
+            messages: [
+              {
+                role: "user",
+                content: [
+                  {
+                    type: "text",
+                    text: `You are an Indian government document verification and data extraction AI assistant.
+You will receive a document image.
+You must respond in valid JSON only.
+No markdown. No explanation. No extra text.
 
-The user is in the "${category}" section and has uploaded a document image.
+The user has uploaded a document image for the category: "${category}"
 
-Please do the following:
+Do the following in order:
 
-STEP 1 - VALIDATION:
-- Check if this image is a real, readable official document
-- Check if it matches the category: "${category}"
-- If it is NOT a valid document or does NOT match the category, return:
+STEP 1 - IMAGE QUALITY CHECK:
+Check if the image is:
+- Clear and readable
+- Not blurry or dark
+- A real physical document (not a screenshot or photocopy of a screen)
+If image quality is bad return:
 {
   "isValid": false,
-  "error": "explain reason here in one line"
+  "error": "Image is blurry or not readable. Please upload a clearer photo."
 }
 
-STEP 2 - EXTRACTION (only if valid):
-- Extract all visible information from the document
-- Return the following JSON:
+STEP 2 - DOCUMENT VALIDATION:
+Check if the document matches the category: "${category}"
+If it does NOT match return:
+{
+  "isValid": false,
+  "error": "This appears to be a [detected document type]. Please upload a valid ${category}."
+}
+If the image is not a document at all return:
+{
+  "isValid": false,
+  "error": "This is not a valid document. Please upload your ${category}."
+}
+
+STEP 3 - DATA EXTRACTION:
+If document is valid, extract all visible data and return:
 {
   "isValid": true,
   "documentType": "",
+  "confidence": "HIGH or MEDIUM or LOW",
   "data": {
     "name": "",
+    "nameInMalayalam": "",
     "dateOfBirth": "",
     "gender": "",
     "documentNumber": "",
     "address": "",
+    "state": "",
+    "pincode": "",
+    "nationality": "",
+    "religion": "",
+    "caste": "",
     "school": "",
-    "grades": {},
+    "board": "",
+    "yearOfPassing": "",
+    "registerNumber": "",
+    "grades": {
+      "subjectName": "grade"
+    },
+    "fathersName": "",
+    "mothersName": "",
+    "bloodGroup": "",
+    "validity": "",
+    "issueDate": "",
     "extraFields": {}
   }
 }
 
-Rules:
-- If a field is not found, set it as null
-- For SSLC, put all subjects and grades inside "grades" object
-- For Aadhaar, extract address fully
-- For PAN, extract PAN number and father name
-- For Driving Licence, extract licence number and validity
-- Put any extra fields that don't fit above into "extraFields"
-- Never guess or hallucinate data, only extract what is visible
-- Respond in JSON only, no markdown, no explanation`
-                },
-                {
-                  type: "image_url",
-                  image_url: {
-                    url: `data:image/jpeg;base64,${base64Image}`
+STRICT RULES:
+- Never guess or hallucinate any data
+- Only extract what is clearly visible in the image
+- If a field is not present set it as null
+- For SSLC fill grades object with all subjects
+- For Aadhaar extract full address with pincode
+- For PAN extract PAN number and fathers name
+- For Driving Licence extract DL number and validity date
+- For Voter ID extract EPIC number and part number
+- For Passport extract passport number and expiry date
+- Respond in JSON only`
+                  },
+                  {
+                    type: "image_url",
+                    image_url: {
+                      url: `data:image/jpeg;base64,${base64Image}`
+                    }
                   }
-                }
-              ]
-            }
-          ],
-          temperature: 0.1,
-          response_format: { type: "json_object" }
-        });
+                ]
+              }
+            ],
+            temperature: 0.1,
+            response_format: { type: "json_object" }
+          });
 
-        const responseText = response.choices[0]?.message?.content || '{}';
-        const result = JSON.parse(responseText);
+          const responseText = response.choices[0]?.message?.content || '{}';
+          const result = JSON.parse(responseText);
 
-        if (result.isValid === false && result.error) {
-           throw new Error(result.error);
+          if (result.isValid === false && result.error) {
+             throw new Error(result.error);
+          }
+
+          // Map LLM response to our internal DocumentData interface
+          const extracted = result.data || {};
+          const data: DocumentData = {
+            documentId: extracted.documentNumber,
+            name: extracted.name,
+            nameInMalayalam: extracted.nameInMalayalam,
+            dob: extracted.dateOfBirth,
+            gender: extracted.gender,
+            address: extracted.address,
+            state: extracted.state,
+            pincode: extracted.pincode,
+            nationality: extracted.nationality,
+            religion: extracted.religion,
+            caste: extracted.caste,
+            school: extracted.school,
+            board: extracted.board,
+            yearOfPassing: extracted.yearOfPassing,
+            registerNumber: extracted.registerNumber,
+            grades: extracted.grades,
+            fathersName: extracted.fathersName,
+            mothersName: extracted.mothersName,
+            bloodGroup: extracted.bloodGroup,
+            validity: extracted.validity,
+            issueDate: extracted.issueDate,
+            extraFields: extracted.extraFields,
+            documentType: result.documentType || category,
+            confidence: result.confidence,
+            isFront: true,
+            isComplete: true
+          };
+
+          if (data.documentType?.toUpperCase().includes('AADHAAR')) {
+             data.isBack = !!data.address;
+             data.isFront = !!data.name;
+             data.isComplete = !!(data.name && data.documentId && (data.dob || data.address));
+          }
+
+          return data; 
+        } catch (error: any) {
+          lastError = error;
+          if (error.message && (error.message.includes('appears to be') || error.message.includes('not a valid document') || error.message.includes('blurry'))) {
+             throw error;
+          }
+          console.warn(`Groq Model ${model} failed, trying next in 1s...`, error.message);
+          await new Promise(res => setTimeout(res, 1000));
+          continue;
         }
-
-        // Map LLM response to our internal DocumentData interface
-        const extracted = result.data || {};
-        const data: DocumentData = {
-          documentId: extracted.documentNumber,
-          name: extracted.name,
-          dob: extracted.dateOfBirth,
-          gender: extracted.gender,
-          address: extracted.address,
-          school: extracted.school,
-          grades: extracted.grades,
-          extraFields: extracted.extraFields,
-          documentType: result.documentType || category,
-          isFront: true,
-          isComplete: true
-        };
-
-        if (data.documentType?.toUpperCase().includes('AADHAAR')) {
-           data.isBack = !!data.address;
-           data.isFront = !!data.name;
-           data.isComplete = !!(data.name && data.documentId && (data.dob || data.address));
-        }
-
-        return data; 
-      } catch (error: any) {
-        lastError = error;
-        // If it's a validation error (not an API error), don't retry, just throw
-        if (error.message && (error.message.includes('looks like') || error.message.includes('not a valid'))) {
-           throw error;
-        }
-        console.warn(`Groq Model ${model} failed, trying next in 1s...`, error.message);
-        await new Promise(res => setTimeout(res, 1000));
-        continue;
       }
-    }
 
-    throw new Error(lastError?.message || 'Failed to extract data after multiple retries.');
+      throw new Error(lastError?.message || 'Failed to extract data after multiple retries.');
     } catch (error: any) {
       console.error('Groq Scanning Error:', error);
       throw new Error(error.message || 'Failed to extract data. Please ensure the image is clear.');
     }
   }
 
-  // Alias for backward compatibility (if needed)
   async scanAadhaar(imageBuffer: Buffer) {
     return this.scanDocument(imageBuffer, 'Aadhaar');
   }

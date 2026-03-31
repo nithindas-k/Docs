@@ -144,11 +144,25 @@ export function AddItemForm({
         }
 
         if (data.name) newFields.push({ key: 'Name', value: data.name, isEncrypted: true });
+        if (data.nameInMalayalam) newFields.push({ key: 'Name (Malayalam)', value: data.nameInMalayalam, isEncrypted: true });
         if (data.dob) newFields.push({ key: 'DOB', value: data.dob, isEncrypted: true });
         if (data.gender) newFields.push({ key: 'Gender', value: data.gender, isEncrypted: true });
         if (data.address) newFields.push({ key: 'Address', value: data.address, isEncrypted: true });
+        if (data.state) newFields.push({ key: 'State', value: data.state, isEncrypted: true });
+        if (data.pincode) newFields.push({ key: 'Pincode', value: data.pincode, isEncrypted: true });
+        if (data.nationality) newFields.push({ key: 'Nationality', value: data.nationality, isEncrypted: true });
+        if (data.religion) newFields.push({ key: 'Religion', value: data.religion, isEncrypted: true });
+        if (data.caste) newFields.push({ key: 'Caste', value: data.caste, isEncrypted: true });
         if (data.school) newFields.push({ key: 'Institution', value: data.school, isEncrypted: false });
-        
+        if (data.board) newFields.push({ key: 'Board/University', value: data.board, isEncrypted: false });
+        if (data.yearOfPassing) newFields.push({ key: 'Year of Passing', value: data.yearOfPassing, isEncrypted: false });
+        if (data.registerNumber) newFields.push({ key: 'Register Number', value: data.registerNumber, isEncrypted: true });
+        if (data.fathersName) newFields.push({ key: "Father's Name", value: data.fathersName, isEncrypted: true });
+        if (data.mothersName) newFields.push({ key: "Mother's Name", value: data.mothersName, isEncrypted: true });
+        if (data.bloodGroup) newFields.push({ key: 'Blood Group', value: data.bloodGroup, isEncrypted: true });
+        if (data.validity) newFields.push({ key: 'Validity', value: data.validity, isEncrypted: false });
+        if (data.issueDate) newFields.push({ key: 'Issue Date', value: data.issueDate, isEncrypted: false });
+
         if (data.grades && typeof data.grades === 'object') {
           Object.entries(data.grades).forEach(([subject, grade]) => {
             if (grade) newFields.push({ key: subject, value: String(grade), isEncrypted: false });
