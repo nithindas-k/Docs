@@ -206,16 +206,26 @@ export function EditItemForm({
         }
 
         setFields(prev => {
-          const updated = [...prev];
+          // 1. Start with non-empty existing fields
+          let updated = [...prev].filter(f => f.key.trim() || f.value.trim());
+          
+          // 2. Merge new fields from AI
           newFields.forEach(newF => {
             const existingIdx = updated.findIndex(f => f.key.toLowerCase() === newF.key.toLowerCase());
             if (existingIdx !== -1) {
-              if (!updated[existingIdx].value) updated[existingIdx] = newF;
+              if (!updated[existingIdx].value) {
+                updated[existingIdx] = newF;
+              }
             } else {
               updated.push(newF);
             }
           });
-          return updated.filter(f => f.key.trim() || f.value.trim());
+          
+          // 3. Fallback: if totally empty, add one blank row
+          if (updated.length === 0) {
+            updated = [{ key: '', value: '', isEncrypted: false }];
+          }
+          return updated;
         });
 
         const docType = result.documentType || categoryName;
@@ -294,17 +304,17 @@ export function EditItemForm({
           <label className="text-sm font-medium text-foreground">Details</label>
           <span className="text-xs text-muted-foreground">{fields.length} field(s)</span>
         </div>
-        <div className="space-y-2 max-h-80 sm:max-h-96 overflow-y-auto pr-1">
+        <div className="w-full space-y-4">
           {fields.map((field, index) => (
-            <div key={index} className="space-y-2 p-2.5 sm:p-3 rounded-xl bg-accent/20 border border-border">
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                <div>
-                  <label className="text-xs font-semibold text-muted-foreground uppercase">Key</label>
-                  <Input type="text" placeholder="e.g., Account Number" value={field.key} onChange={(e) => handleFieldChange(index, 'key', e.target.value)} className="text-sm bg-background" />
+            <div key={index} className="space-y-3 p-3 sm:p-4 rounded-xl bg-accent/20 border border-border">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div className="min-w-0 flex-1">
+                  <label className="text-[10px] font-bold text-muted-foreground uppercase opacity-70 leading-none truncate block mb-1">Key</label>
+                  <Input type="text" placeholder="e.g., Account Number" value={field.key} onChange={(e) => handleFieldChange(index, 'key', e.target.value)} className="text-sm bg-background w-full h-10 px-3 rounded-lg" />
                 </div>
-                <div>
-                  <label className="text-xs font-semibold text-muted-foreground uppercase">Value</label>
-                  <Input type="text" placeholder="e.g., 1234567890" value={field.value} onChange={(e) => handleFieldChange(index, 'value', e.target.value)} className="text-sm bg-background" />
+                <div className="min-w-0 flex-1">
+                  <label className="text-[10px] font-bold text-muted-foreground uppercase opacity-70 leading-none truncate block mb-1">Value</label>
+                  <Input type="text" placeholder="e.g., 1234567890" value={field.value} onChange={(e) => handleFieldChange(index, 'value', e.target.value)} className="text-sm bg-background w-full h-10 px-3 rounded-lg" />
                 </div>
               </div>
               <div className="flex items-end justify-between gap-2">

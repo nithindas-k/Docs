@@ -158,7 +158,7 @@ export function PersonDetail() {
             </Dialog>
 
             <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-                <DialogContent className="w-[92vw] sm:max-w-2xl bg-background border rounded-3xl p-5 sm:p-8 max-h-[85vh] overflow-y-auto scrollbar-hide">
+                <DialogContent className="w-[95vw] sm:max-w-2xl bg-background border rounded-3xl p-4 sm:p-8 max-h-[92vh] overflow-y-auto scrollbar-hide">
                   <DialogHeader>
                     <DialogTitle className="text-xl font-bold tracking-tight mb-1">
                       New {selectedCategory?.name} - {personName}

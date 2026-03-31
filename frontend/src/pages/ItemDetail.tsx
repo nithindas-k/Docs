@@ -209,17 +209,17 @@ export function ItemDetail() {
           <Table>
             <TableHeader className="bg-muted/30">
               <TableRow>
-                <TableHead className="py-3 sm:py-4 px-4 sm:px-6 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground w-2/5 sm:w-1/3">Label</TableHead>
-                <TableHead className="py-3 sm:py-4 px-4 sm:px-6 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Value</TableHead>
+                <TableHead className="py-3 sm:py-4 px-3 sm:px-6 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground w-[30%] sm:w-1/4">Label</TableHead>
+                <TableHead className="py-3 sm:py-4 px-3 sm:px-6 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Value</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {item.fields.map((field, i) => (
                 <TableRow key={i} className="hover:bg-muted/5">
-                  <TableCell className="py-3 sm:py-4 px-4 sm:px-6 text-[10px] sm:text-xs font-bold text-muted-foreground/70 uppercase truncate max-w-[100px] sm:max-w-none">{field.key}</TableCell>
-                  <TableCell className="py-3 sm:py-4 px-4 sm:px-6">
-                    <div className="flex items-center text-xs sm:text-sm font-semibold tracking-tight font-mono group">
-                      <span className="text-foreground truncate">{field.value}</span>
+                  <TableCell className="py-3 sm:py-4 px-3 sm:px-6 text-[10px] sm:text-xs font-bold text-muted-foreground/70 uppercase break-words leading-relaxed">{field.key || 'Detail'}</TableCell>
+                  <TableCell className="py-3 sm:py-4 px-3 sm:px-6">
+                    <div className="flex items-start justify-between text-xs sm:text-sm font-semibold tracking-tight font-mono group gap-2">
+                      <span className="text-foreground break-all sm:break-words leading-relaxed flex-1">{field.value}</span>
                       <CopyButton value={field.value} />
                     </div>
                   </TableCell>
