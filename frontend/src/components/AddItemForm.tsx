@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../services/api';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { Plus, Trash2, Home, User, ShieldCheck } from 'lucide-react';
+import { Plus, Trash2, Home, User, ShieldCheck, ArrowLeft } from 'lucide-react';
 import { FileUploadCard, UploadedFile } from './ui/file-upload-card';
 import { ImageCropper } from './ui/image-cropper';
 import { Dialog, DialogContent, DialogTitle, DialogHeader } from './ui/dialog';
@@ -21,12 +21,14 @@ interface AddItemFormProps {
   categoryName: string;
   onSubmit: (data: { title: string; fields: Field[]; photoFiles?: File[] }) => void;
   isLoading?: boolean;
+  onBack?: () => void;
 }
 
 export function AddItemForm({
   categoryName,
   onSubmit,
   isLoading,
+  onBack,
 }: AddItemFormProps) {
   const [title, setTitle] = useState('');
   const [fields, setFields] = useState<Field[]>([{ key: '', value: '', isEncrypted: false }]);
@@ -231,11 +233,18 @@ export function AddItemForm({
 
       <div className="space-y-3">
         <FileUploadCard files={uploadedFiles} onFilesChange={handleFilesChange} onFileRemove={handleFileRemove} />
-        {isScannable && uploadedFiles.length > 0 && (
-          <Button type="button" onClick={handleManualScan} disabled={isScanning} variant="secondary" className="w-full h-11 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 font-bold transition-all gap-2">
-            {isScanning ? <span className="flex items-center gap-2"><span className="h-4 w-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />Extracting...</span> : <span className="flex items-center gap-2"><Plus className="h-4 w-4" />Scan & Extract Data</span>}
-          </Button>
-        )}
+        <div className="flex gap-2">
+          {onBack && (
+            <Button type="button" onClick={onBack} variant="outline" className="px-3 rounded-xl border-primary/20 text-primary hover:bg-primary/5">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          )}
+          {isScannable && uploadedFiles.length > 0 && (
+            <Button type="button" onClick={handleManualScan} disabled={isScanning} variant="secondary" className="flex-1 h-11 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 font-bold transition-all gap-2">
+              {isScanning ? <span className="flex items-center gap-2"><span className="h-4 w-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />Extracting...</span> : <span className="flex items-center gap-2"><Plus className="h-4 w-4" />Scan & Extract Data</span>}
+            </Button>
+          )}
+        </div>
       </div>
 
       <div className="space-y-2">
