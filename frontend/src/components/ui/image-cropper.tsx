@@ -16,7 +16,7 @@ export function ImageCropper({ imageSrc, onCropComplete, onCancel }: ImageCroppe
   const [crop, setCrop] = React.useState({ x: 0, y: 0 });
   const [zoom, setZoom] = React.useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = React.useState<Area | null>(null);
-  const [aspect, setAspect] = React.useState<number | undefined>(1);
+  const [aspect, setAspect] = React.useState<number | undefined>(undefined);
 
   const onCropDone = React.useCallback((_: Area, pixelCrop: Area) => {
     setCroppedAreaPixels(pixelCrop);
@@ -97,9 +97,12 @@ export function ImageCropper({ imageSrc, onCropComplete, onCancel }: ImageCroppe
         <Button onClick={onCancel} variant="ghost" className="h-10 text-[10px] font-bold uppercase tracking-widest px-6">
           Cancel
         </Button>
+        <Button onClick={() => onCropComplete?.(imageSrc)} variant="outline" className="h-10 text-[10px] font-bold uppercase tracking-widest px-6 border-border/60 hover:bg-accent/30">
+          Use Full Image
+        </Button>
         <div className="flex-1" />
-        <Button onClick={handleApply} className="h-10 px-8 rounded-md text-[10px] font-bold uppercase tracking-widest bg-primary text-white">
-          Save Crop
+        <Button onClick={handleApply} className="h-10 px-8 rounded-md text-[10px] font-bold uppercase tracking-widest bg-primary text-white hover:bg-primary/90 transition-all">
+          Apply & Save
         </Button>
       </div>
     </div>

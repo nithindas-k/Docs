@@ -7,7 +7,6 @@ import { fetchCategories } from '../features/categorySlice';
 import { fetchPersons } from '../features/personSlice';
 import { logout, fetchProfile } from '../features/authSlice';
 import Lenis from 'lenis';
-import { Toaster } from 'sonner';
 import { LogoutConfirmDialog } from './LogoutConfirmDialog';
 
 export function Layout() {
@@ -83,7 +82,6 @@ export function Layout() {
           dispatch(logout());
         }}
       />
-      <Toaster position="top-right" richColors />
     </div>
   );
 }

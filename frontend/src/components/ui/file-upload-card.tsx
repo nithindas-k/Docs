@@ -10,8 +10,9 @@ export interface UploadedFile {
   id: string;
   file: File;
   progress: number;
-  status: "uploading" | "completed" | "error";
+  status: "uploading" | "scanning" | "completed" | "error";
   preview?: string; // Add this for existing remote images
+  side?: 'front' | 'back' | null;
 }
 
 const FilePreview = ({ file, previewUrl }: { file: File, previewUrl?: string }) => {
@@ -191,11 +192,12 @@ export const FileUploadCard = React.forwardRef<HTMLDivElement, FileUploadCardPro
                           <span className="mx-1">•</span>
                           <span
                             className={cn(
-                              { "text-primary": file.status === "uploading" },
-                              { "text-green-500": file.status === "completed" }
+                              { "text-primary": file.status === "uploading" || file.status === "scanning" },
+                              { "text-green-500": file.status === "completed" },
+                              { "text-amber-500 animate-pulse": file.status === "scanning" }
                             )}
                           >
-                            {file.status === "uploading" ? "Uploading..." : "Completed"}
+                            {file.status === "uploading" ? "Uploading..." : (file.status === "scanning" ? "Scanning document..." : "Completed")}
                           </span>
                         </div>
                         {file.status === "uploading" && (

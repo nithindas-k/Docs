@@ -42,7 +42,7 @@ function App() {
               </Route>
             </Routes>
           </BrowserRouter>
-          <Toaster position="top-center" richColors />
+          <Toaster position="top-right" expand={true} duration={6000} closeButton={true} richColors />
       </ThemeProvider>
     </Provider>
   );
