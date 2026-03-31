@@ -1,5 +1,5 @@
 import * as React from "react";
-import { UploadCloud, X, CheckCircle2, Trash2 } from "lucide-react";
+import { UploadCloud, X, CheckCircle2, Trash2, Camera } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { cn } from "../../lib/utils";
@@ -56,6 +56,7 @@ export const FileUploadCard = React.forwardRef<HTMLDivElement, FileUploadCardPro
   ({ className, files = [], onFilesChange, onFileRemove, onClose, ...props }, ref) => {
     const [isDragging, setIsDragging] = React.useState(false);
     const fileInputRef = React.useRef<HTMLInputElement>(null);
+    const cameraInputRef = React.useRef<HTMLInputElement>(null);
 
     const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
       e.preventDefault();
@@ -92,6 +93,10 @@ export const FileUploadCard = React.forwardRef<HTMLDivElement, FileUploadCardPro
     };
 
     const triggerFileSelect = () => fileInputRef.current?.click();
+    const triggerCameraCapture = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      cameraInputRef.current?.click();
+    };
 
     const formatFileSize = (bytes: number) => {
       if (bytes === 0) return "0 KB";
@@ -158,14 +163,35 @@ export const FileUploadCard = React.forwardRef<HTMLDivElement, FileUploadCardPro
               className="hidden"
               onChange={handleFileSelect}
             />
-            <UploadCloud className="mb-3 sm:mb-4 h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground opacity-50" />
-            <p className="text-sm sm:text-base font-bold text-foreground">Choose a file or drag it here.</p>
-            <p className="mt-1 text-[10px] sm:text-xs text-muted-foreground">
-              JPEG, PNG, PDF formats, up to 10 MB.
-            </p>
-            <Button variant="outline" size="sm" className="mt-4 pointer-events-none h-8 sm:h-9 text-[11px] sm:text-xs px-6">
-              Browse File
-            </Button>
+            <input
+              ref={cameraInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              className="hidden"
+              onChange={handleFileSelect}
+            />
+            <div className="flex flex-col sm:flex-row items-center gap-3 w-full justify-center">
+              <Button 
+                type="button"
+                variant="outline" 
+                size="sm" 
+                className="pointer-events-none h-9 mt-4 text-[11px] sm:text-xs px-6 font-bold"
+              >
+                <UploadCloud className="w-4 h-4 mr-2 opacity-50" />
+                Browse Gallery
+              </Button>
+              <Button 
+                type="button"
+                onClick={triggerCameraCapture}
+                variant="secondary" 
+                size="sm" 
+                className="h-9 mt-2 sm:mt-4 text-[11px] sm:text-xs px-6 font-bold bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20"
+              >
+                <Camera className="w-4 h-4 mr-2" />
+                Open Camera
+              </Button>
+            </div>
           </div>
         </div>
 

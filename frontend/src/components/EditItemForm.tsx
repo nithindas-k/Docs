@@ -237,7 +237,7 @@ export function EditItemForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <Dialog open={!!imageToCrop} onOpenChange={(open) => !open && setImageToCrop(null)}>
-        <DialogContent className="max-w-lg border bg-background p-6 rounded-2xl shadow-xl overflow-hidden">
+        <DialogContent className="w-[98vw] max-w-xl border bg-background p-4 sm:p-6 rounded-2xl shadow-xl overflow-hidden max-h-[95vh] flex flex-col">
           <DialogHeader className="sr-only"><DialogTitle>Crop Image</DialogTitle></DialogHeader>
           {imageToCrop && (
             <ImageCropper imageSrc={imageToCrop.src} onCropComplete={handleCropDone} onCancel={handleCropCancel} />

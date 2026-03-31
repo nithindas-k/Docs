@@ -37,8 +37,8 @@ export function ImageCropper({ imageSrc, onCropComplete, onCancel }: ImageCroppe
   return (
     <div className="flex flex-col w-full h-full gap-8">
       {/* 1. Cropper Box: Flat and Clean */}
-      <div 
-        style={{ height: '360px', width: '100%', minHeight: '360px' }} 
+      <div
+        style={{ height: '360px', width: '100%', minHeight: '360px' }}
         className="relative bg-black rounded-lg overflow-hidden border border-border"
       >
         <Cropper
@@ -57,13 +57,13 @@ export function ImageCropper({ imageSrc, onCropComplete, onCancel }: ImageCroppe
       <div className="flex flex-col gap-6">
         <div className="flex items-center gap-4">
           <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest min-w-10">Zoom</span>
-          <Slider 
-             value={[zoom]} 
-             onValueChange={(v: number[]) => setZoom(v[0] || 1)} 
-             min={1} 
-             max={3} 
-             step={0.01} 
-             className="flex-1"
+          <Slider
+            value={[zoom]}
+            onValueChange={(v: number[]) => setZoom(v[0] || 1)}
+            min={1}
+            max={3}
+            step={0.01}
+            className="flex-1"
           />
         </div>
 
@@ -72,18 +72,17 @@ export function ImageCropper({ imageSrc, onCropComplete, onCancel }: ImageCroppe
           <div className="flex flex-1 items-center gap-1 border border-border/40 rounded-md p-0.5">
             {[
               { label: "1:1", val: 1 },
-              { label: "4:3", val: 4/3 },
-              { label: "16:9", val: 16/9 },
+              { label: "4:3", val: 4 / 3 },
+              { label: "16:9", val: 16 / 9 },
               { label: "Free", val: undefined },
             ].map((opt) => (
               <button
                 key={opt.label}
                 onClick={() => setAspect(opt.val)}
-                className={`flex-1 py-1.5 rounded text-[10px] font-bold transition-all ${
-                  aspect === opt.val 
-                    ? "bg-accent text-foreground shadow-sm" 
+                className={`flex-1 py-1.5 rounded text-[10px] font-bold transition-all ${aspect === opt.val
+                    ? "bg-accent text-foreground shadow-sm"
                     : "text-muted-foreground/60 hover:text-foreground"
-                }`}
+                  }`}
               >
                 {opt.label}
               </button>
