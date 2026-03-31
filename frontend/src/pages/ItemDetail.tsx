@@ -202,31 +202,33 @@ export function ItemDetail() {
         )}
       </div>
 
-      {/* 2. Table Next */}
-      <div className="space-y-3 sm:space-y-4">
-        <h3 className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Information Details</h3>
-        <div className="border rounded-xl overflow-hidden bg-background">
-          <Table>
-            <TableHeader className="bg-muted/30">
-              <TableRow>
-                <TableHead className="py-3 sm:py-4 px-3 sm:px-6 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground w-[30%] sm:w-1/4">Label</TableHead>
-                <TableHead className="py-3 sm:py-4 px-3 sm:px-6 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Value</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {item.fields.map((field, i) => (
-                <TableRow key={i} className="hover:bg-muted/5">
-                  <TableCell className="py-3 sm:py-4 px-3 sm:px-6 text-[10px] sm:text-xs font-bold text-muted-foreground/70 uppercase break-words leading-relaxed">{field.key || 'Detail'}</TableCell>
-                  <TableCell className="py-3 sm:py-4 px-3 sm:px-6">
-                    <div className="flex items-start justify-between text-xs sm:text-sm font-semibold tracking-tight font-mono group gap-2">
-                      <span className="text-foreground break-all sm:break-words leading-relaxed flex-1">{field.value}</span>
-                      <CopyButton value={field.value} />
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+      <div className="space-y-4">
+        <h3 className="text-[10px] sm:text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em] px-1 opacity-70">
+          Information Details
+        </h3>
+        <div className="grid grid-cols-1 gap-3 sm:gap-4">
+          {item.fields.map((field, i) => (
+            <div key={i} className="group relative bg-muted/20 border border-border/50 rounded-2xl p-4 transition-all hover:bg-muted/30 hover:border-primary/20">
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[9px] sm:text-[10px] font-black text-muted-foreground uppercase tracking-[0.15em] opacity-60">
+                    {field.key || 'Detail'}
+                  </span>
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                     <CopyButton value={field.value} />
+                  </div>
+                </div>
+                <div className="flex items-start justify-between gap-3">
+                  <p className="text-[13px] sm:text-sm font-bold tracking-tight text-foreground/90 break-words leading-relaxed font-mono">
+                    {field.value}
+                  </p>
+                  <div className="sm:hidden -mt-1">
+                     <CopyButton value={field.value} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 

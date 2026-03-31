@@ -12,37 +12,20 @@ const groq = new Groq({
 export interface DocumentData {
   documentId?: string;
   name?: string;
-  nameInMalayalam?: string;
   dob?: string;
-  gender?: string;
   address?: string;
-  state?: string;
-  pincode?: string;
-  nationality?: string;
-  religion?: string;
-  caste?: string;
-  school?: string;
-  board?: string;
-  yearOfPassing?: string;
-  registerNumber?: string;
-  grades?: any;
-  fathersName?: string;
-  mothersName?: string;
-  bloodGroup?: string;
-  validity?: string;
-  issueDate?: string;
-  extraFields?: any;
+  fields: Array<{ key: string; value: string; isEncrypted: boolean }>;
+  documentType?: string;
+  confidence?: string;
   isFront?: boolean;
   isBack?: boolean;
   isComplete?: boolean;
-  documentType?: string;
-  confidence?: string;
 }
 
 export class DocumentScannerService {
   async scanDocument(imageBuffer: Buffer, category: string): Promise<DocumentData> {
     try {
-      // 1. Optimize image for Vision API (resize to max 1024px, maintain aspect ratio)
+      // 1. Optimize image for Vision API
       const processedImage = await sharp(imageBuffer)
         .resize({ width: 1024, withoutEnlargement: true })
         .jpeg({ quality: 80 })
@@ -67,83 +50,31 @@ export class DocumentScannerService {
                   {
                     type: "text",
                     text: `You are an Indian government document verification and data extraction AI assistant.
-You will receive a document image.
-You must respond in valid JSON only.
-No markdown. No explanation. No extra text.
+You will receive a document image for the vault category: "${category}".
 
-The user has uploaded a document image for the category: "${category}"
+STEP 1: Check image quality. Return error if blurry or unreadable.
+STEP 2: Validate if it's a valid ${category}.
+STEP 3: EXTRACT ALL INFORMATION as Key-Value pairs EXACTLY AS LABELED ON THE DOCUMENT.
 
-Do the following in order:
-
-STEP 1 - IMAGE QUALITY CHECK:
-Check if the image is:
-- Clear and readable
-- Not blurry or dark
-- A real physical document (not a screenshot or photocopy of a screen)
-If image quality is bad return:
-{
-  "isValid": false,
-  "error": "Image is blurry or not readable. Please upload a clearer photo."
-}
-
-STEP 2 - DOCUMENT VALIDATION:
-Check if the document matches the category: "${category}"
-If it does NOT match return:
-{
-  "isValid": false,
-  "error": "This appears to be a [detected document type]. Please upload a valid ${category}."
-}
-If the image is not a document at all return:
-{
-  "isValid": false,
-  "error": "This is not a valid document. Please upload your ${category}."
-}
-
-STEP 3 - DATA EXTRACTION:
-If document is valid, extract all visible data and return:
+Return ONLY a JSON object:
 {
   "isValid": true,
-  "documentType": "",
-  "confidence": "HIGH or MEDIUM or LOW",
-  "data": {
-    "name": "",
-    "nameInMalayalam": "",
-    "dateOfBirth": "",
-    "gender": "",
-    "documentNumber": "",
-    "address": "",
-    "state": "",
-    "pincode": "",
-    "nationality": "",
-    "religion": "",
-    "caste": "",
-    "school": "",
-    "board": "",
-    "yearOfPassing": "",
-    "registerNumber": "",
-    "grades": {
-      "subjectName": "grade"
-    },
-    "fathersName": "",
-    "mothersName": "",
-    "bloodGroup": "",
-    "validity": "",
-    "issueDate": "",
-    "extraFields": {}
-  }
+  "documentType": "Official type name (e.g. Aadhaar Card Front)",
+  "confidence": "HIGH/MEDIUM/LOW",
+  "extractedFields": [
+    { "key": "Label on doc (e.g. Name of Candidate)", "value": "Value exactly as printed", "isEncrypted": true },
+    ...
+  ],
+  "documentId": "Primary ID number (Aadhaar/PAN/Register No)",
+  "name": "Full name found",
+  "error": null
 }
 
-STRICT RULES:
-- Never guess or hallucinate any data
-- Only extract what is clearly visible in the image
-- If a field is not present set it as null
-- For SSLC fill grades object with all subjects
-- For Aadhaar extract full address with pincode
-- For PAN extract PAN number and fathers name
-- For Driving Licence extract DL number and validity date
-- For Voter ID extract EPIC number and part number
-- For Passport extract passport number and expiry date
-- Respond in JSON only`
+RULES:
+- Use the actual labels from the document (e.g. 'Name of Father', 'Sex', 'Admission No').
+- For SSLC, include all Subjects and Grades as individual fields (e.g. 'English': 'A+').
+- Never guess. If field not readable, skip it.
+- Respond in single-line valid JSON. NO MARKDOWN.`
                   },
                   {
                     type: "image_url",
@@ -165,31 +96,10 @@ STRICT RULES:
              throw new Error(result.error);
           }
 
-          // Map LLM response to our internal DocumentData interface
-          const extracted = result.data || {};
           const data: DocumentData = {
-            documentId: extracted.documentNumber,
-            name: extracted.name,
-            nameInMalayalam: extracted.nameInMalayalam,
-            dob: extracted.dateOfBirth,
-            gender: extracted.gender,
-            address: extracted.address,
-            state: extracted.state,
-            pincode: extracted.pincode,
-            nationality: extracted.nationality,
-            religion: extracted.religion,
-            caste: extracted.caste,
-            school: extracted.school,
-            board: extracted.board,
-            yearOfPassing: extracted.yearOfPassing,
-            registerNumber: extracted.registerNumber,
-            grades: extracted.grades,
-            fathersName: extracted.fathersName,
-            mothersName: extracted.mothersName,
-            bloodGroup: extracted.bloodGroup,
-            validity: extracted.validity,
-            issueDate: extracted.issueDate,
-            extraFields: extracted.extraFields,
+            documentId: result.documentId,
+            name: result.name,
+            fields: result.extractedFields || [],
             documentType: result.documentType || category,
             confidence: result.confidence,
             isFront: true,
@@ -197,27 +107,27 @@ STRICT RULES:
           };
 
           if (data.documentType?.toUpperCase().includes('AADHAAR')) {
-             data.isBack = !!data.address;
+             const hasAddress = data.fields.some(f => f.key.toLowerCase().includes('address'));
+             data.isBack = hasAddress;
              data.isFront = !!data.name;
-             data.isComplete = !!(data.name && data.documentId && (data.dob || data.address));
           }
 
           return data; 
         } catch (error: any) {
           lastError = error;
-          if (error.message && (error.message.includes('appears to be') || error.message.includes('not a valid document') || error.message.includes('blurry'))) {
+          if (error.message && (error.message.includes('blurry') || error.message.includes('invalid') || error.message.includes('appears to be'))) {
              throw error;
           }
-          console.warn(`Groq Model ${model} failed, trying next in 1s...`, error.message);
+          console.warn(`Groq failure, retry 1s...`, error.message);
           await new Promise(res => setTimeout(res, 1000));
           continue;
         }
       }
 
-      throw new Error(lastError?.message || 'Failed to extract data after multiple retries.');
+      throw new Error(lastError?.message || 'Extraction failed.');
     } catch (error: any) {
       console.error('Groq Scanning Error:', error);
-      throw new Error(error.message || 'Failed to extract data. Please ensure the image is clear.');
+      throw new Error(error.message || 'Scanning failure.');
     }
   }
 

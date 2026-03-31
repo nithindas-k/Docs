@@ -128,51 +128,10 @@ export function AddItemForm({
 
         setUploadedFiles(prev => prev.map(item => item.id === id ? { ...item, status: 'completed' as const, side: result.detectedSide } : item));
 
-        const newFields: Field[] = [];
-        
-        if (data.documentId) {
-          const categoryUpper = categoryName.toUpperCase();
-          let label = `${categoryName} Number`;
-          if (categoryUpper.includes('AADHAAR')) label = 'Aadhaar Number';
-          else if (categoryUpper.includes('PAN')) label = 'PAN Number';
-          else if (categoryUpper.includes('DRIVING')) label = 'DL Number';
-          else if (categoryUpper.includes('PASSPORT')) label = 'Passport Number';
-          else if (categoryUpper.includes('VOTER')) label = 'Voter ID';
-          else if (categoryUpper.includes('SSLC')) label = 'Register Number';
+        const newFields = data.fields || [];
 
-          newFields.push({ key: label, value: data.documentId, isEncrypted: true });
-        }
-
-        if (data.name) newFields.push({ key: 'Name', value: data.name, isEncrypted: true });
-        if (data.nameInMalayalam) newFields.push({ key: 'Name (Malayalam)', value: data.nameInMalayalam, isEncrypted: true });
-        if (data.dob) newFields.push({ key: 'DOB', value: data.dob, isEncrypted: true });
-        if (data.gender) newFields.push({ key: 'Gender', value: data.gender, isEncrypted: true });
-        if (data.address) newFields.push({ key: 'Address', value: data.address, isEncrypted: true });
-        if (data.state) newFields.push({ key: 'State', value: data.state, isEncrypted: true });
-        if (data.pincode) newFields.push({ key: 'Pincode', value: data.pincode, isEncrypted: true });
-        if (data.nationality) newFields.push({ key: 'Nationality', value: data.nationality, isEncrypted: true });
-        if (data.religion) newFields.push({ key: 'Religion', value: data.religion, isEncrypted: true });
-        if (data.caste) newFields.push({ key: 'Caste', value: data.caste, isEncrypted: true });
-        if (data.school) newFields.push({ key: 'Institution', value: data.school, isEncrypted: false });
-        if (data.board) newFields.push({ key: 'Board/University', value: data.board, isEncrypted: false });
-        if (data.yearOfPassing) newFields.push({ key: 'Year of Passing', value: data.yearOfPassing, isEncrypted: false });
-        if (data.registerNumber) newFields.push({ key: 'Register Number', value: data.registerNumber, isEncrypted: true });
-        if (data.fathersName) newFields.push({ key: "Father's Name", value: data.fathersName, isEncrypted: true });
-        if (data.mothersName) newFields.push({ key: "Mother's Name", value: data.mothersName, isEncrypted: true });
-        if (data.bloodGroup) newFields.push({ key: 'Blood Group', value: data.bloodGroup, isEncrypted: true });
-        if (data.validity) newFields.push({ key: 'Validity', value: data.validity, isEncrypted: false });
-        if (data.issueDate) newFields.push({ key: 'Issue Date', value: data.issueDate, isEncrypted: false });
-
-        if (data.grades && typeof data.grades === 'object') {
-          Object.entries(data.grades).forEach(([subject, grade]) => {
-            if (grade) newFields.push({ key: subject, value: String(grade), isEncrypted: false });
-          });
-        }
-
-        if (data.extraFields && typeof data.extraFields === 'object') {
-          Object.entries(data.extraFields).forEach(([key, val]) => {
-            if (val) newFields.push({ key, value: String(val), isEncrypted: true });
-          });
+        if (data.documentType) {
+          setTitle(data.documentType);
         }
 
         setFields(prev => {
@@ -180,7 +139,7 @@ export function AddItemForm({
           let updated = prev.filter(f => f.key.trim() || f.value.trim());
           
           // 2. Merge new fields from AI
-          newFields.forEach(newF => {
+          newFields.forEach((newF: Field) => {
             const existingIdx = updated.findIndex(f => f.key.toLowerCase() === newF.key.toLowerCase());
             if (existingIdx !== -1) {
               // Update value if existing is empty
