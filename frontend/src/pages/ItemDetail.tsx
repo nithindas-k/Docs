@@ -206,26 +206,50 @@ export function ItemDetail() {
         <h3 className="text-[10px] sm:text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em] px-1 opacity-70">
           Information Details
         </h3>
-        <div className="grid grid-cols-1 gap-3 sm:gap-4">
+
+        {/* Desktop View: Traditional Table */}
+        <div className="hidden sm:block border rounded-xl overflow-hidden bg-background shadow-sm">
+          <Table>
+            <TableHeader className="bg-muted/30">
+              <TableRow>
+                <TableHead className="py-4 px-6 text-[10px] font-bold uppercase tracking-widest text-muted-foreground w-1/3">Label</TableHead>
+                <TableHead className="py-4 px-6 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Value</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {item.fields.map((field, i) => (
+                <TableRow key={i} className="hover:bg-muted/5 transition-colors border-b last:border-0">
+                  <TableCell className="py-4 px-6 text-xs font-bold text-muted-foreground/70 uppercase">
+                    {field.key || 'Detail'}
+                  </TableCell>
+                  <TableCell className="py-4 px-6">
+                    <div className="flex items-center justify-between gap-4 group/row">
+                      <p className="text-sm font-semibold tracking-tight break-words font-mono text-foreground">
+                        {field.value}
+                      </p>
+                      <CopyButton value={field.value} />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+
+        {/* Mobile View: Modern Stacked Cards */}
+        <div className="sm:hidden grid grid-cols-1 gap-3">
           {item.fields.map((field, i) => (
-            <div key={i} className="group relative bg-muted/20 border border-border/50 rounded-2xl p-4 transition-all hover:bg-muted/30 hover:border-primary/20">
+            <div key={i} className="group relative bg-muted/20 border border-border/50 rounded-2xl p-4 transition-all active:bg-muted/30">
               <div className="flex flex-col gap-1.5">
-                <div className="flex items-center justify-between">
-                  <span className="text-[9px] sm:text-[10px] font-black text-muted-foreground uppercase tracking-[0.15em] opacity-60">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.15em] opacity-60">
                     {field.key || 'Detail'}
                   </span>
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                     <CopyButton value={field.value} />
-                  </div>
+                  <CopyButton value={field.value} />
                 </div>
-                <div className="flex items-start justify-between gap-3">
-                  <p className="text-[13px] sm:text-sm font-bold tracking-tight text-foreground/90 break-words leading-relaxed font-mono">
-                    {field.value}
-                  </p>
-                  <div className="sm:hidden -mt-1">
-                     <CopyButton value={field.value} />
-                  </div>
-                </div>
+                <p className="text-[13px] font-bold tracking-tight text-foreground/90 break-words leading-relaxed font-mono">
+                  {field.value}
+                </p>
               </div>
             </div>
           ))}
