@@ -137,12 +137,11 @@ export function AddItemForm({ categoryName, onSubmit, onBack, isLoading }: AddIt
           photoFiles: uploadedFiles.map(f => f.file),
         });
 
-        // ONLY clear if submission was successful
         setTitle('');
         setFields([{ key: '', value: '', isEncrypted: false }]);
         setUploadedFiles([]);
       } catch (err) {
-        // If error, we DON'T clear the form so user can fix and retry
+     
         console.error('Submit failed, keeping form data:', err);
       }
     };
