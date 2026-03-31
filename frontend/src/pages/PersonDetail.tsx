@@ -1,10 +1,10 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Plus, Files, ShieldCheck, Loader2, Search, ChevronRight, ArrowLeft } from "lucide-react";
+import { Plus, Files, ShieldCheck, Loader2, Search, ChevronRight, ArrowLeft, User } from "lucide-react";
 import { ResourceCardsGrid } from "../components/ui/cards-grid";
 import { InsuranceCard } from "../components/ui/insurance-card";
 import { Button } from "../components/ui/button";
-import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle } from "../components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from "../components/ui/dialog";
 import { AddItemForm } from "../components/AddItemForm";
 import { useAppDispatch, useAppSelector } from "../features/hooks";
 import { fetchItemsByPerson } from "../features/itemSlice";
@@ -161,11 +161,11 @@ export function PersonDetail() {
                 <DialogContent className="w-[92vw] sm:max-w-2xl bg-background border rounded-3xl p-5 sm:p-8 max-h-[85vh] overflow-y-auto scrollbar-hide">
                   <DialogHeader>
                     <DialogTitle className="text-xl font-bold tracking-tight mb-1">
-                      New {selectedCategory?.name}
+                      New {selectedCategory?.name} - {personName}
                     </DialogTitle>
-                    <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest mt-1 opacity-60">
-                      Adding Secure Data
-                    </p>
+                    <DialogDescription className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest mt-1 opacity-60 flex items-center gap-1.5">
+                      <User className="h-3 w-3" /> Secure Data for {personName}
+                    </DialogDescription>
                   </DialogHeader>
                   <div className="mt-6 sm:mt-8">
                     <AddItemForm 
