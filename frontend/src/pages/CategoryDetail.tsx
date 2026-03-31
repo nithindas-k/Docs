@@ -149,7 +149,7 @@ export function CategoryDetail() {
               Add {category?.name || 'Item'}
             </Button>
           </DialogTrigger>
-          <DialogContent className="w-[92vw] sm:max-w-md bg-background border shadow-xl rounded-3xl p-5 sm:p-8">
+          <DialogContent className="w-[95vw] sm:max-w-lg bg-background border shadow-xl rounded-3xl p-4 sm:p-6 overflow-hidden">
             <DialogHeader>
               <DialogTitle className="text-xl font-bold tracking-tight mb-1">Add New {category?.name}</DialogTitle>
               <DialogDescription className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest mt-1 opacity-60">

@@ -101,6 +101,14 @@ export const FileUploadCard = React.forwardRef<HTMLDivElement, FileUploadCardPro
       return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
     };
 
+    const formatFileName = (name: string) => {
+      const parts = name.split('.');
+      const ext = parts.pop();
+      const base = parts.join('.');
+      if (base.length <= 8) return name;
+      return `${base.substring(0, 5)}... .${ext}`;
+    };
+
     const fileItemVariants = {
       hidden: { opacity: 0, x: -20 },
       visible: { opacity: 1, x: 0 },
@@ -162,7 +170,7 @@ export const FileUploadCard = React.forwardRef<HTMLDivElement, FileUploadCardPro
         </div>
 
         {files.length > 0 && (
-          <div className="border-t p-4 sm:p-6">
+          <div className="border-t p-3 sm:p-4">
             <ul className="space-y-4">
               <AnimatePresence>
                 {files.map((file) => (
@@ -175,11 +183,11 @@ export const FileUploadCard = React.forwardRef<HTMLDivElement, FileUploadCardPro
                     layout
                     className="flex items-center justify-between"
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
                       <FilePreview file={file.file} previewUrl={file.preview} />
-                      <div className="flex-1">
-                        <p className="max-w-[150px] truncate text-sm font-medium text-foreground sm:max-w-xs">
-                          {file.file.name}
+                      <div className="flex-1 min-w-0 overflow-hidden">
+                        <p className="truncate text-sm font-medium text-foreground">
+                          {formatFileName(file.file.name)}
                         </p>
                         <div className="text-xs text-muted-foreground">
                           {file.status === "uploading" && (
@@ -206,7 +214,7 @@ export const FileUploadCard = React.forwardRef<HTMLDivElement, FileUploadCardPro
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 shrink-0">
                       {file.status === "completed" && <CheckCircle2 className="h-5 w-5 text-green-500" />}
                       <Button
                         variant="ghost"
