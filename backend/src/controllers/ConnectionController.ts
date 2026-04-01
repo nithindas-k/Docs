@@ -127,12 +127,10 @@ class ConnectionController {
     }
   }
 
-  // DELETE /api/connections/:id
-  // Disconnect from a linked user
   async disconnect(req: Request, res: Response) {
     try {
       const userId = req.user!.userId;
-      const { id } = req.params; // connectionId
+      const { id } = req.params; 
 
       const connection = await Connection.findOne({
         _id: id,
