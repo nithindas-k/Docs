@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { verifyToken, JwtPayload } from '../utils/jwt';
 import { STATUS_CODES, MESSAGES } from '../constants';
 
-// Add user to Request type
+
 declare global {
   namespace Express {
     interface Request {
