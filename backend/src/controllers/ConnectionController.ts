@@ -111,7 +111,7 @@ class ConnectionController {
         .populate('fromUser', 'name email picture')
         .populate('toUser', 'name email picture');
 
-      // Return the "other" user in each connection
+    
       const linkedUsers = connections.map((conn: any) => {
         const isFrom = conn.fromUser._id.toString() === userId;
         const otherUser = isFrom ? conn.toUser : conn.fromUser;

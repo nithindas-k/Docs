@@ -40,7 +40,7 @@ export class ScannerController {
     }
   }
 
-  // Alias for backward compatibility
+
   async scanAadhaar(req: Request, res: Response) {
     req.body.category = 'AADHAAR';
     return this.scanDocument(req, res);

@@ -45,7 +45,7 @@ class ItemController {
           return res.status(STATUS_CODES.NOT_FOUND).json({ message: MESSAGES.NOT_FOUND });
         }
 
-        // Allowed — return item as-is (no decryption for linked user's encrypted fields for now)
+  
         item = rawItem.toObject() as any;
       }
 
