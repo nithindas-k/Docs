@@ -25,7 +25,7 @@ export interface DocumentData {
 export class DocumentScannerService {
   async scanDocument(imageBuffer: Buffer, category: string): Promise<DocumentData> {
     try {
-      // 1. Optimize image for Vision API
+     
       const processedImage = await sharp(imageBuffer)
         .resize({ width: 1024, withoutEnlargement: true })
         .jpeg({ quality: 80 })
