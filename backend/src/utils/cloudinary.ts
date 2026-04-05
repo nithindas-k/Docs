@@ -50,7 +50,7 @@ async function deleteFromCloudinary(publicId: string): Promise<void> {
     await cloudinary.uploader.destroy(publicId);
   } catch (error: any) {
     console.error(`Failed to delete from Cloudinary: ${error.message}`);
-    // Don't throw - continue even if deletion fails
+  
   }
 }
 
