@@ -2,7 +2,7 @@ import React from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { cn } from "../../lib/utils"; // Using relative for guarantee
 
-// --- PROPS INTERFACE ---
+
 export interface JobCardProps {
   companyLogo: React.ReactNode;
   companyName: string;
@@ -15,7 +15,7 @@ export interface JobCardProps {
   onClick?: () => void;
 }
 
-// --- BORDER VARIANT STYLES ---
+
 const variantClasses = {
   pink: "border-t-pink-500",
   yellow: "border-t-yellow-500",
