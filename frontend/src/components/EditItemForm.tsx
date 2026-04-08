@@ -166,10 +166,9 @@ export function EditItemForm({
         }
 
         setFields(prev => {
-          // 1. Start with non-empty existing fields
+         
           let updated = prev.filter(f => f.key.trim() || f.value.trim());
-          
-          // 2. Merge new fields from AI
+         
           newFields.forEach((newF: Field) => {
             const existingIdx = updated.findIndex(f => f.key.toLowerCase() === newF.key.toLowerCase());
             if (existingIdx !== -1) {
@@ -181,7 +180,7 @@ export function EditItemForm({
             }
           });
           
-          // 3. Fallback: if totally empty, add one blank row
+   
           if (updated.length === 0) {
             updated = [{ key: '', value: '', isEncrypted: false }];
           }
