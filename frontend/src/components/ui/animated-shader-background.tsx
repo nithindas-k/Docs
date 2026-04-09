@@ -154,7 +154,7 @@ const AnimatedShaderBackground = () => {
     if (materialRef.current && containerRef.current) {
       materialRef.current.uniforms.uTheme.value = theme === 'dark' ? 0.0 : 1.0;
       
-      // Re-render if it's static (mobile)
+     
       if (window.innerWidth < 768) {
         // We need access to renderer here or just trigger a dummy resize event
         window.dispatchEvent(new Event('resize'));

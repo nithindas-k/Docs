@@ -37,7 +37,7 @@ export const AnimatedJobCard = ({
   className,
   onClick,
 }: JobCardProps) => {
-  // --- FULL ANIMATION LOGIC ---
+
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
