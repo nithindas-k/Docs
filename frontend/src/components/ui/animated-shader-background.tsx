@@ -156,7 +156,7 @@ const AnimatedShaderBackground = () => {
       
      
       if (window.innerWidth < 768) {
-        // We need access to renderer here or just trigger a dummy resize event
+      
         window.dispatchEvent(new Event('resize'));
       }
     }
