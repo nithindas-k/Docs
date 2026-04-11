@@ -135,7 +135,7 @@ const AnimatedShaderBackground = () => {
       renderer.setSize(width, height);
       material.uniforms.iResolution.value.set(width, height);
       
-      // Force a re-render on resize (especially useful for the static mobile view)
+
       renderer.render(scene, camera);
     };
     window.addEventListener('resize', handleResize);
