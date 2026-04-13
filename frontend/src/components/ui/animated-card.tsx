@@ -55,11 +55,11 @@ export const AnimatedJobCard = ({
     mouseY.set(0);
   };
 
-  // Transform mouse position into a 3D rotation
+  
   const rotateX = useTransform(mouseY, [-150, 150], [10, -10]);
   const rotateY = useTransform(mouseX, [-150, 150], [-10, 10]);
 
-  // Apply spring physics for a smooth return effect
+
   const springConfig = { stiffness: 300, damping: 20, mass: 0.5 };
   const springRotateX = useSpring(rotateX, springConfig);
   const springRotateY = useSpring(rotateY, springConfig);
