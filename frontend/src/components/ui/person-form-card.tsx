@@ -53,7 +53,7 @@ export const PersonFormCard: React.FC<PersonFormCardProps> = ({
     setImageUrl(croppedImageUrl);
     setTempImage(null);
     
-    // Convert base64/blob URL to File object
+    
     try {
       const response = await fetch(croppedImageUrl);
       const blob = await response.blob();
