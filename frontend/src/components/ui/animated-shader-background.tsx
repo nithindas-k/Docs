@@ -126,7 +126,7 @@ const AnimatedShaderBackground = () => {
       frameId = requestAnimationFrame(animate);
     };
     
-    // Initial render and start animation if not mobile
+  
     animate();
 
     const handleResize = () => {
