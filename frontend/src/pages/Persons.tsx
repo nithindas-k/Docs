@@ -30,7 +30,6 @@ export function Persons() {
   const [deletingPerson, setDeletingPerson] = useState<Person | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Link Request State
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
   const [linkEmail, setLinkEmail] = useState("");
   const [isSendingLink, setIsSendingLink] = useState(false);
@@ -116,7 +115,6 @@ export function Persons() {
     }
   };
 
-  // Merge local family profiles and linked users for the ProfileSelector
   const profiles = persons.map((p) => ({
     id: p._id,
     label: p.name,
