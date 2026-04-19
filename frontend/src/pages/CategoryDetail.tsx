@@ -94,7 +94,7 @@ export function CategoryDetail() {
 
       await dispatch(updateItem({ id: editingItem._id, data: formData })).unwrap();
 
-      // Refresh items list
+  
       if (id) {
         dispatch(fetchItemsByCategory(id));
       }

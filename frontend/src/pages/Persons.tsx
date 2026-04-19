@@ -30,7 +30,7 @@ export function Persons() {
   const [deletingPerson, setDeletingPerson] = useState<Person | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
+//const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
   const [linkEmail, setLinkEmail] = useState("");
   const [isSendingLink, setIsSendingLink] = useState(false);
   const [showPendingPanel, setShowPendingPanel] = useState(false);
