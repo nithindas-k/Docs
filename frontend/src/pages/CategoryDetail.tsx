@@ -115,7 +115,7 @@ export function CategoryDetail() {
     try {
       await api.delete(`${API_ROUTES.ITEM.BASE}/${deletingItem._id}`);
 
-      // Refresh items list
+      
       dispatch(fetchItemsByCategory(id));
       setDeletingItem(null);
       toast.success('Document deleted successfully');
