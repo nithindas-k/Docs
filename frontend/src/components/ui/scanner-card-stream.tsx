@@ -30,7 +30,7 @@ type ScannerCardStreamProps = {
   scanEffect?: 'clip' | 'scramble';
 };
 
-// --- The Main Component ---
+
 const ScannerCardStream = ({
   initialSpeed = 150,
   direction = -1,
