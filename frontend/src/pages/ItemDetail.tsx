@@ -70,7 +70,7 @@ export function ItemDetail() {
 
   const item = id ? itemsById[id] : null;
   const category = categories.find(c => c._id === item?.category);
-  // If item.user doesn't match current user, it's a linked (read-only) item
+
   const isReadOnly = !!(item?.user && authUser?._id && item.user !== authUser._id);
 
   useEffect(() => {

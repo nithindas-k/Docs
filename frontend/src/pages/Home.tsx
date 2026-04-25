@@ -11,7 +11,7 @@ export function Home() {
 
   const totalVaults = persons.length + linkedUsers.length;
 
-  // Prepare cards for the Testimonials stack
+  
   const personProfiles = persons.map((p) => ({
     label: p.name,
     icon: p.imageUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${p.name}&backgroundColor=111,222,333&fontFamily=Inter&fontWeight=700&fontSize=40`,
