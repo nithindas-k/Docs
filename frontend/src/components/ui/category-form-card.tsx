@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 import { cn } from "../../lib/utils";
 
-// --- Required shadcn/ui components ---
 import { Button } from "./button";
 import { Input } from "./input";
 import { Label } from "./label";
