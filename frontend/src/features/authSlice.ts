@@ -69,7 +69,7 @@ const authSlice = createSlice({
       .addCase(fetchProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch profile';
-        state.token = null; // Auto logout if profile fails
+        state.token = null;
         localStorage.removeItem('docs_token');
       });
   },

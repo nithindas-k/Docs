@@ -7,7 +7,7 @@ export interface Item {
   createdAt: string | number | Date;
   _id: string;
   name: string;
-  user?: string;  // owner's userId — used to detect read-only (linked) items
+  user?: string; 
   category: string;
   person?: string;
   photoUrl?: string; 
@@ -39,7 +39,7 @@ export const fetchItemById = createAsyncThunk<Item, string>(
   'items/fetchById',
   async (itemId: string) => {
     const response = await api.get<{ data: Item }>(API_ROUTES.ITEM.ID(itemId));
-    return response.data; // This is the Item
+    return response.data; 
   }
 );
 

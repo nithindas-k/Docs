@@ -62,7 +62,7 @@ export function LinkedVaultDetail() {
     );
   }
 
-  // Group items by category
+ 
   const grouped = items.reduce<Record<string, Item[]>>((acc, item) => {
     const catId = item.category;
     if (!acc[catId]) acc[catId] = [];
