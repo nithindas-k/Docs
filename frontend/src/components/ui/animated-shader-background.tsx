@@ -115,7 +115,6 @@ const AnimatedShaderBackground = () => {
     const animate = () => {
       const isMobile = window.innerWidth < 768;
       
-      // If mobile, we stop the animation loop to make it static
       if (isMobile) {
         renderer.render(scene, camera);
         return; 
