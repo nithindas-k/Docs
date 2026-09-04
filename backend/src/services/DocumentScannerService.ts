@@ -34,8 +34,8 @@ export class DocumentScannerService {
       const base64Image = processedImage.toString('base64');
 
       const visionModels = [
-        "meta-llama/llama-4-scout-17b-16e-instruct",
-        "llama-3.2-11b-vision-preview"
+        "qwen/qwen3.6-27b",
+        "qwen/qwen3.8-27b"
       ];
 
       let lastError: any;
@@ -86,10 +86,12 @@ RULES:
               }
             ],
             temperature: 0.1,
-            response_format: { type: "json_object" }
           });
 
-          const responseText = response.choices[0]?.message?.content || '{}';
+          const rawText = response.choices[0]?.message?.content || '{}';
+          // Qwen models may wrap output in <think> tags or markdown code fences — extract raw JSON
+          const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+          const responseText = jsonMatch ? jsonMatch[0] : '{}';
           const result = JSON.parse(responseText);
 
           if (result.isValid === false && result.error) {
