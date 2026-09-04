@@ -172,13 +172,25 @@ export function AddItemForm({
       const response = await fetch(croppedImageUrl);
       const blob = await response.blob();
       const croppedFile = new File([blob], imageToCrop.file.name, { type: 'image/png' });
+      const fileId = `${croppedFile.name}-${Date.now()}`;
       setImageToCrop(null);
       setUploadedFiles(prev => [...prev, {
-        id: `${croppedFile.name}-${Date.now()}`,
+        id: fileId,
         file: croppedFile,
         progress: 100,
         status: 'completed' as const,
       }].slice(0, MAX_PHOTOS));
+
+      // Auto-scan immediately after crop for document categories
+      if (isScannable) {
+        setIsScanning(true);
+        toast.info('Scanning document...');
+        try {
+          await handleScanSingleFile(croppedFile, fileId);
+        } finally {
+          setIsScanning(false);
+        }
+      }
     } catch (e) {
       console.error('Cropping failed:', e);
     }
