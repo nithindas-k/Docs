@@ -75,17 +75,25 @@ class ItemController {
         return res.status(STATUS_CODES.BAD_REQUEST).json({ message: 'Category and title are required' });
       }
 
+      const MAX_PHOTO_BYTES = 10 * 1024 * 1024; // 10 MB — Cloudinary free tier limit
       const photoUrls: string[] = [];
       if (files && files.length > 0) {
+        // Validate size before touching Cloudinary
+        for (const file of files) {
+          if (file.buffer.length > MAX_PHOTO_BYTES) {
+            const sizeMB = (file.buffer.length / 1024 / 1024).toFixed(1);
+            return res.status(413).json({ message: `Image "${file.originalname}" is too large (${sizeMB} MB). Maximum allowed size is 10 MB.` });
+          }
+        }
         try {
-          const uploadPromises = files.map(file => 
+          const uploadPromises = files.map(file =>
             uploadToCloudinary(file.buffer, file.originalname)
           );
           const results = await Promise.all(uploadPromises);
           photoUrls.push(...results);
         } catch (uploadError) {
           console.error('Cloudinary Bulk Upload Error (create):', uploadError);
-          return res.status(STATUS_CODES.BAD_REQUEST).json({ message: 'Photo upload failed' });
+          return res.status(STATUS_CODES.BAD_REQUEST).json({ message: 'Photo upload failed. Please try again.' });
         }
       }
 
@@ -115,17 +123,25 @@ class ItemController {
         return res.status(STATUS_CODES.BAD_REQUEST).json({ message: 'Title is required' });
       }
 
+      const MAX_PHOTO_BYTES = 10 * 1024 * 1024; // 10 MB — Cloudinary free tier limit
       const photoUrls: string[] = [];
       if (files && files.length > 0) {
+        // Validate size before touching Cloudinary
+        for (const file of files) {
+          if (file.buffer.length > MAX_PHOTO_BYTES) {
+            const sizeMB = (file.buffer.length / 1024 / 1024).toFixed(1);
+            return res.status(413).json({ message: `Image "${file.originalname}" is too large (${sizeMB} MB). Maximum allowed size is 10 MB.` });
+          }
+        }
         try {
-          const uploadPromises = files.map(file => 
+          const uploadPromises = files.map(file =>
             uploadToCloudinary(file.buffer, file.originalname)
           );
           const results = await Promise.all(uploadPromises);
           photoUrls.push(...results);
         } catch (uploadError) {
           console.error('Cloudinary Bulk Upload Error (update):', uploadError);
-          return res.status(STATUS_CODES.BAD_REQUEST).json({ message: 'Photo upload failed' });
+          return res.status(STATUS_CODES.BAD_REQUEST).json({ message: 'Photo upload failed. Please try again.' });
         }
       }
 

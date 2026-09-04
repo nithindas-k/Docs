@@ -172,6 +172,14 @@ export function AddItemForm({
       const response = await fetch(croppedImageUrl);
       const blob = await response.blob();
       const croppedFile = new File([blob], imageToCrop.file.name, { type: 'image/png' });
+
+      // Cropped PNGs can be larger than the original JPEG — enforce the same 10 MB cap
+      if (croppedFile.size > MAX_FILE_SIZE) {
+        setImageToCrop(null);
+        toast.error(`Image is too large after cropping (${(croppedFile.size / 1024 / 1024).toFixed(1)} MB). Please use a smaller image — maximum is 10 MB.`);
+        return;
+      }
+
       const fileId = `${croppedFile.name}-${Date.now()}`;
       setImageToCrop(null);
       setUploadedFiles(prev => [...prev, {
