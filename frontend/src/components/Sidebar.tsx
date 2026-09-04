@@ -1,7 +1,6 @@
-import type { ReactNode } from 'react';
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { CreditCard, Car, FileText, Landmark, GraduationCap, UserCheck, Book, Plus, LayoutDashboard, Users, Download, CheckCircle2 } from 'lucide-react';
+import { Plus, LayoutDashboard, Users, Download, CheckCircle2 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { Button } from './ui/button';
 import { Theme } from './ui/theme';
@@ -12,16 +11,7 @@ import { CategoryFormCard } from './ui/category-form-card';
 import { useAppDispatch } from '../features/hooks';
 import { createCategory } from '../features/categorySlice';
 import { toast } from 'sonner';
-
-const STYLED_ICONS: Record<string, ReactNode> = {
-  'credit-card': <CreditCard className="w-5 h-5" />,
-  'car': <Car className="w-5 h-5" />,
-  'file-text': <FileText className="w-5 h-5" />,
-  'landmark': <Landmark className="w-5 h-5" />,
-  'graduation-cap': <GraduationCap className="w-5 h-5" />,
-  'user-check': <UserCheck className="w-5 h-5" />,
-  'book': <Book className="w-5 h-5" />,
-};
+import { getCategoryIcon } from '../lib/categoryIcons';
 
 interface SidebarProps {
   categories: any[];
@@ -111,7 +101,7 @@ export function Sidebar({ categories, isOpen, setIsOpen }: SidebarProps) {
                   )
                 }
               >
-                {STYLED_ICONS[cat.icon] || <FileText className="w-5 h-5" />}
+                {getCategoryIcon(cat.icon, "w-5 h-5")}
                 {cat.name}
               </NavLink>
             ))}

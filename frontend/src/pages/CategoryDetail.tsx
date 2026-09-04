@@ -21,6 +21,7 @@ import { ResourceCardsGrid } from '../components/ui/cards-grid';
 import { api } from '../services/api';
 import { API_ROUTES } from '../constants';
 import type { Item } from '../features/itemSlice';
+import { getCategoryIcon } from '../lib/categoryIcons';
 
 export function CategoryDetail() {
   const { id } = useParams<{ id: string }>();
@@ -138,9 +139,14 @@ export function CategoryDetail() {
   return (
     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-16">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">{category?.name || 'Category Options'}</h1>
-          <p className="text-muted-foreground mt-1 text-sm font-medium">Manage your {category?.name || 'items'} securely here.</p>
+        <div className="flex items-center gap-3">
+          <div className="h-12 w-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
+            {getCategoryIcon(category?.icon, "w-6 h-6")}
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">{category?.name || 'Category Options'}</h1>
+            <p className="text-muted-foreground mt-0.5 text-sm font-medium">Manage your {category?.name || 'items'} securely here.</p>
+          </div>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>

@@ -2,61 +2,17 @@
 
 import * as React from "react";
 import { motion } from "framer-motion";
-import { 
-  CreditCard, Car, FileText, Landmark, GraduationCap, 
-  UserCheck, Info, X, Shield, Lock, Wallet, 
-  Key, Globe, Briefcase, Heart, Home, Plane, Map, 
-  Smartphone, Mail, Calendar, Star, Gift, 
-  Database, Fingerprint, 
-  PiggyBank, Receipt, Zap,
-  Wifi, Umbrella, Activity,
-  Link, Paperclip, Archive,
-  FolderOpen, Cloud, Bell, Camera, Plus
-} from "lucide-react";
+import { Info, X, Plus } from "lucide-react";
 import { cn } from "../../lib/utils";
-
 import { Button } from "./button";
 import { Input } from "./input";
 import { Label } from "./label";
+import { getCategoryIcon, ICON_MAP } from "../../lib/categoryIcons";
 
-const AVAILABLE_ICONS = [
-  { id: 'file-text', icon: <FileText className="w-5 h-5" /> },
-  { id: 'credit-card', icon: <CreditCard className="w-5 h-5" /> },
-  { id: 'shield', icon: <Shield className="w-5 h-5" /> },
-  { id: 'lock', icon: <Lock className="w-5 h-5" /> },
-  { id: 'wallet', icon: <Wallet className="w-5 h-5" /> },
-  { id: 'key', icon: <Key className="w-5 h-5" /> },
-  { id: 'passport', icon: <Fingerprint className="w-5 h-5" /> },
-  { id: 'landmark', icon: <Landmark className="w-5 h-5" /> },
-  { id: 'graduation-cap', icon: <GraduationCap className="w-5 h-5" /> },
-  { id: 'user-check', icon: <UserCheck className="w-5 h-5" /> },
-  { id: 'car', icon: <Car className="w-5 h-5" /> },
-  { id: 'plane', icon: <Plane className="w-5 h-5" /> },
-  { id: 'map', icon: <Map className="w-5 h-5" /> },
-  { id: 'briefcase', icon: <Briefcase className="w-5 h-5" /> },
-  { id: 'heart', icon: <Heart className="w-5 h-5" /> },
-  { id: 'home', icon: <Home className="w-5 h-5" /> },
-  { id: 'globe', icon: <Globe className="w-5 h-5" /> },
-  { id: 'piggy-bank', icon: <PiggyBank className="w-5 h-5" /> },
-  { id: 'receipt', icon: <Receipt className="w-5 h-5" /> },
-  { id: 'activity', icon: <Activity className="w-5 h-5" /> },
-  { id: 'smartphone', icon: <Smartphone className="w-5 h-5" /> },
-  { id: 'mail', icon: <Mail className="w-5 h-5" /> },
-  { id: 'calendar', icon: <Calendar className="w-5 h-5" /> },
-  { id: 'zap', icon: <Zap className="w-5 h-5" /> },
-  { id: 'wifi', icon: <Wifi className="w-5 h-5" /> },
-  { id: 'star', icon: <Star className="w-5 h-5" /> },
-  { id: 'gift', icon: <Gift className="w-5 h-5" /> },
-  { id: 'archive', icon: <Archive className="w-5 h-5" /> },
-  { id: 'folder-open', icon: <FolderOpen className="w-5 h-5" /> },
-  { id: 'camera', icon: <Camera className="w-5 h-5" /> },
-  { id: 'database', icon: <Database className="w-5 h-5" /> },
-  { id: 'cloud', icon: <Cloud className="w-5 h-5" /> },
-  { id: 'umbrella', icon: <Umbrella className="w-5 h-5" /> },
-  { id: 'bell', icon: <Bell className="w-5 h-5" /> },
-  { id: 'link', icon: <Link className="w-5 h-5" /> },
-  { id: 'paperclip', icon: <Paperclip className="w-5 h-5" /> },
-];
+const AVAILABLE_ICONS = Object.keys(ICON_MAP).map((id) => ({
+  id,
+  icon: getCategoryIcon(id, "w-5 h-5"),
+}));
 
 interface CategoryFormCardProps {
   initialData?: {
@@ -83,7 +39,7 @@ export const CategoryFormCard: React.FC<CategoryFormCardProps> = ({
     onSubmit({ name: name.trim(), icon: selectedIcon });
   };
 
-  const selectedIconComponent = AVAILABLE_ICONS.find(i => i.id === selectedIcon)?.icon || <FileText className="w-5 h-5" />;
+  const selectedIconComponent = getCategoryIcon(selectedIcon, "w-5 h-5");
 
   const ICON_GROUPS = [
     {

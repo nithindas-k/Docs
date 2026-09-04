@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Plus, Files, ShieldCheck, Loader2, Search, ChevronRight, ArrowLeft, User } from "lucide-react";
+import { Plus, ShieldCheck, Loader2, Search, ChevronRight, ArrowLeft, User } from "lucide-react";
 import { ResourceCardsGrid } from "../components/ui/cards-grid";
 import { InsuranceCard } from "../components/ui/insurance-card";
 import { Button } from "../components/ui/button";
@@ -12,6 +12,7 @@ import { setCurrentPerson } from "../features/authSlice";
 import { api } from "../services/api";
 import { API_ROUTES } from "../constants";
 import { toast } from "sonner";
+import { getCategoryIcon } from "../lib/categoryIcons";
 
 export function PersonDetail() {
   const { id } = useParams<{ id: string }>();
@@ -148,7 +149,7 @@ export function PersonDetail() {
                         className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-2xl border bg-card hover:bg-accent transition-all group text-left"
                       >
                         <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg border bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all duration-300">
-                          <Files className="w-4 h-4" />
+                          {getCategoryIcon(cat.icon, "w-4 h-4")}
                         </div>
                         <span className="font-bold text-[11px] sm:text-sm tracking-tight text-foreground/80 lowercase first-letter:uppercase truncate">{cat.name}</span>
                       </button>
@@ -229,7 +230,7 @@ export function PersonDetail() {
                         >
                           <div className="flex items-center gap-4">
                               <div className="h-11 w-11 rounded-xl border bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all duration-300">
-                                <Files className="w-5 h-5" />
+                                {getCategoryIcon(cat.icon, "w-5 h-5")}
                               </div>
                               <div className="flex flex-col group-hover:translate-x-1 transition-transform duration-200">
                                 <h4 className="text-sm font-bold tracking-tight text-foreground/80 lowercase first-letter:uppercase">
