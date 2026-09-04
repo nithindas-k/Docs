@@ -25,6 +25,14 @@ export const fetchCategories = createAsyncThunk('categories/fetchAll', async () 
   return response.data;
 });
 
+export const createCategory = createAsyncThunk(
+  'categories/create',
+  async (data: { name: string; icon: string }) => {
+    const response = await api.post<{ data: Category }>(API_ROUTES.CATEGORY.BASE, data);
+    return response.data;
+  }
+);
+
 const categorySlice = createSlice({
   name: 'categories',
   initialState,
@@ -42,6 +50,9 @@ const categorySlice = createSlice({
         state.loading = false;
         state.error = action.error.message || 'Failed to load categories';
         state.categories = [...DEFAULT_CATEGORIES];
+      })
+      .addCase(createCategory.fulfilled, (state, action) => {
+        state.categories.push(action.payload);
       });
   },
 });

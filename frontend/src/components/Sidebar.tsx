@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { CreditCard, Car, FileText, Landmark, GraduationCap, UserCheck, Book, Plus, LayoutDashboard, Users, Download, CheckCircle2 } from 'lucide-react';
 import { cn } from '../lib/utils';
@@ -6,6 +7,11 @@ import { Button } from './ui/button';
 import { Theme } from './ui/theme';
 import { Logo } from './ui/Logo';
 import { usePWAInstall } from '../hooks/usePWAInstall';
+import { Dialog, DialogContent, DialogTitle, DialogHeader } from './ui/dialog';
+import { CategoryFormCard } from './ui/category-form-card';
+import { useAppDispatch } from '../features/hooks';
+import { createCategory } from '../features/categorySlice';
+import { toast } from 'sonner';
 
 const STYLED_ICONS: Record<string, ReactNode> = {
   'credit-card': <CreditCard className="w-5 h-5" />,
@@ -25,6 +31,18 @@ interface SidebarProps {
 
 export function Sidebar({ categories, isOpen, setIsOpen }: SidebarProps) {
   const { isInstallable, isInstalled, install } = usePWAInstall();
+  const dispatch = useAppDispatch();
+  const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
+
+  const handleCreateCategory = async (data: { name: string; icon: string }) => {
+    try {
+      await dispatch(createCategory(data)).unwrap();
+      toast.success(`"${data.name}" category created!`);
+      setIsAddCategoryOpen(false);
+    } catch {
+      toast.error('Failed to create category. Please try again.');
+    }
+  };
 
   return (
     <>
@@ -102,7 +120,10 @@ export function Sidebar({ categories, isOpen, setIsOpen }: SidebarProps) {
               variant="ghost" 
               className="mt-2 w-full justify-start gap-3 border border-dashed border-border" 
               size="sm"
-              onClick={() => setIsOpen(false)}
+              onClick={() => {
+                setIsOpen(false);
+                setIsAddCategoryOpen(true);
+              }}
             >
               <Plus className="w-4 h-4" />
               Add Category
@@ -143,6 +164,19 @@ export function Sidebar({ categories, isOpen, setIsOpen }: SidebarProps) {
           </div>
         </div>
       </aside>
+
+      {/* Add Category Dialog */}
+      <Dialog open={isAddCategoryOpen} onOpenChange={setIsAddCategoryOpen}>
+        <DialogContent className="p-0 border-none bg-transparent shadow-none max-w-3xl w-[95vw]">
+          <DialogHeader className="sr-only">
+            <DialogTitle>Add Category</DialogTitle>
+          </DialogHeader>
+          <CategoryFormCard
+            onSubmit={handleCreateCategory}
+            onCancel={() => setIsAddCategoryOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
